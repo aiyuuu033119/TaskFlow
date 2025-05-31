@@ -107,9 +107,9 @@ function TaskManagerContent() {
     if (!('title' in data && data.title)) {
       throw new Error('Title is required')
     }
-    
+
     const createData = data as CreateTaskData
-    
+
     try {
       const newTask: Task = {
         id: Date.now().toString(),
@@ -290,7 +290,7 @@ function TaskManagerContent() {
         <div className="grid gap-4 sm:gap-6 md:grid-cols-[1fr,400px]">
           {/* Task List */}
           <Card className="p-3 sm:p-4 md:p-6">
-            <EmptyStateWrapper 
+            <EmptyStateWrapper
               isEmpty={filteredTasks.length === 0}
               variant={emptyStateConfig?.variant || 'no-results'}
               onAddTask={() => setIsAddingTask(true)}

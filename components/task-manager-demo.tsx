@@ -159,9 +159,9 @@ export function TaskManagerDemo() {
     if (!('title' in data && data.title)) {
       throw new Error('Title is required for creating a task')
     }
-    
+
     const createData = data as CreateTaskData
-    
+
     try {
       await simulateNetworkDelay(600)
 
