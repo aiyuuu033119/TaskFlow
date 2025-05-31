@@ -16,7 +16,7 @@ interface UseAsyncReturn<T> {
 
 export function useAsync<T>(
   asyncFunction: (...args: any[]) => Promise<T>,
-  immediate = false
+  immediate = false,
 ): UseAsyncReturn<T> {
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
@@ -26,8 +26,8 @@ export function useAsync<T>(
 
   const execute = useCallback(
     async (...args: any[]): Promise<T | undefined> => {
-      setState(prev => ({ ...prev, loading: true, error: null }))
-      
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+
       try {
         const data = await asyncFunction(...args)
         setState({ data, loading: false, error: null })
@@ -38,7 +38,7 @@ export function useAsync<T>(
         throw errorObj
       }
     },
-    [asyncFunction]
+    [asyncFunction],
   )
 
   const reset = useCallback(() => {

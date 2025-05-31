@@ -1,17 +1,18 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { TaskFilters } from '@/types'
-import { 
-  ClipboardList, 
-  Search, 
-  Filter, 
-  CheckCircle2, 
-  Sparkles, 
+import type { TaskFilters } from '@/types'
+import {
+  ClipboardList,
+  Search,
+  Filter,
+  CheckCircle2,
+  Sparkles,
   Plus,
   RotateCcw,
-  Lightbulb
+  Lightbulb,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { ReactNode } from 'react'
 
 export type EmptyStateVariant = 'new-user' | 'no-results' | 'search' | 'all-completed' | 'filtered'
 
@@ -32,7 +33,8 @@ const variantConfig = {
     icon: Sparkles,
     iconColor: 'text-blue-500',
     title: 'Welcome to TaskFlow!',
-    description: 'Start organizing your work by creating your first task. Stay productive and never miss a deadline.',
+    description:
+      'Start organizing your work by creating your first task. Stay productive and never miss a deadline.',
     actionText: 'Create Your First Task',
     showTemplates: true,
   },
@@ -40,15 +42,16 @@ const variantConfig = {
     icon: ClipboardList,
     iconColor: 'text-muted-foreground',
     title: 'No tasks found',
-    description: 'Try adjusting your filters or search criteria to find what you\'re looking for.',
+    description: "Try adjusting your filters or search criteria to find what you're looking for.",
     actionText: 'Add New Task',
     showTemplates: false,
   },
-  'search': {
+  search: {
     icon: Search,
     iconColor: 'text-orange-500',
     title: 'No search results',
-    description: 'We couldn\'t find any tasks matching your search. Try different keywords or check your spelling.',
+    description:
+      "We couldn't find any tasks matching your search. Try different keywords or check your spelling.",
     actionText: 'Create Task',
     showTemplates: false,
   },
@@ -56,15 +59,17 @@ const variantConfig = {
     icon: CheckCircle2,
     iconColor: 'text-green-500',
     title: 'All done! 🎉',
-    description: 'Congratulations! You\'ve completed all your tasks. Time to add new ones or take a well-deserved break.',
+    description:
+      "Congratulations! You've completed all your tasks. Time to add new ones or take a well-deserved break.",
     actionText: 'Add New Task',
     showTemplates: false,
   },
-  'filtered': {
+  filtered: {
     icon: Filter,
     iconColor: 'text-purple-500',
     title: 'No matching tasks',
-    description: 'No tasks match your current filter settings. Try clearing some filters or adding new tasks.',
+    description:
+      'No tasks match your current filter settings. Try clearing some filters or adding new tasks.',
     actionText: 'Add New Task',
     showTemplates: false,
   },
@@ -100,7 +105,9 @@ export function EmptyState({
   const hasActiveFilters = activeFilters.length > 0
 
   return (
-    <div className={cn('flex flex-col items-center justify-center py-12 px-4 text-center', className)}>
+    <div
+      className={cn('flex flex-col items-center justify-center py-12 px-4 text-center', className)}
+    >
       {/* Icon */}
       <div className="rounded-full bg-muted p-6 mb-6">
         <Icon className={cn('h-12 w-12', config.iconColor)} />
@@ -108,24 +115,21 @@ export function EmptyState({
 
       {/* Title and Description */}
       <div className="max-w-md space-y-3 mb-6">
-        <h3 className="text-xl font-semibold text-foreground">
-          {title || config.title}
-        </h3>
-        <p className="text-muted-foreground">
-          {description || config.description}
-        </p>
+        <h3 className="text-xl font-semibold text-foreground">{title || config.title}</h3>
+        <p className="text-muted-foreground">{description || config.description}</p>
 
         {/* Show active filters if applicable */}
-        {hasActiveFilters && (variant === 'filtered' || variant === 'no-results' || variant === 'search') && (
-          <div className="flex flex-wrap gap-2 justify-center mt-4">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
-            {activeFilters.map((filter, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {filter}
-              </Badge>
-            ))}
-          </div>
-        )}
+        {hasActiveFilters &&
+          (variant === 'filtered' || variant === 'no-results' || variant === 'search') && (
+            <div className="flex flex-wrap gap-2 justify-center mt-4">
+              <span className="text-sm text-muted-foreground">Active filters:</span>
+              {activeFilters.map((filter, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {filter}
+                </Badge>
+              ))}
+            </div>
+          )}
       </div>
 
       {/* Actions */}
@@ -170,9 +174,7 @@ export function EmptyState({
 
       {/* Stats for context */}
       {totalTasks > 0 && variant !== 'new-user' && (
-        <p className="text-xs text-muted-foreground mt-4">
-          Showing 0 of {totalTasks} total tasks
-        </p>
+        <p className="text-xs text-muted-foreground mt-4">Showing 0 of {totalTasks} total tasks</p>
       )}
     </div>
   )
@@ -183,7 +185,7 @@ export function EmptyStateWrapper({
   isEmpty,
   ...emptyStateProps
 }: {
-  children: React.ReactNode
+  children: ReactNode
   isEmpty: boolean
 } & EmptyStateProps) {
   if (isEmpty) {

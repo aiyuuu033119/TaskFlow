@@ -20,7 +20,6 @@ export function AddTaskButton({
   variant = 'button',
   className,
 }: AddTaskButtonProps) {
-
   if (variant === 'card') {
     return (
       <Card
@@ -48,11 +47,7 @@ export function AddTaskButton({
 
   return (
     <Button onClick={onClick} disabled={isLoading || disabled} className={className}>
-      {isLoading ? (
-        <Spinner size="sm" className="mr-2" />
-      ) : (
-        <Plus className="h-4 w-4 mr-2" />
-      )}
+      {isLoading ? <Spinner size="sm" className="mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
       {isLoading ? 'Creating...' : 'Add Task'}
     </Button>
   )

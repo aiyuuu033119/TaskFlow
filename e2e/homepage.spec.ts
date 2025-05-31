@@ -12,7 +12,9 @@ test.describe('Homepage', () => {
     await expect(page.locator('h1:has-text("TaskFlow")')).toBeVisible()
 
     // Check if the theme toggle is present
-    await expect(page.locator('[aria-label*="theme"], button:has-text("Toggle theme")')).toBeVisible()
+    await expect(
+      page.locator('[aria-label*="theme"], button:has-text("Toggle theme")'),
+    ).toBeVisible()
 
     // Check if the main content area is visible
     await expect(page.locator('main')).toBeVisible()
@@ -29,7 +31,10 @@ test.describe('Homepage', () => {
 
     // Fill in the task form
     await page.fill('input[placeholder*="title"]', 'Test Task from E2E')
-    await page.fill('textarea[placeholder*="description"]', 'This is a test task created by E2E test')
+    await page.fill(
+      'textarea[placeholder*="description"]',
+      'This is a test task created by E2E test',
+    )
 
     // Select priority
     await page.click('button[role="combobox"]:has-text("Low")')

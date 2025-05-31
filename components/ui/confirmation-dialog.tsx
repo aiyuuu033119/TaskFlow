@@ -10,13 +10,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  AlertTriangle, 
-  Trash2, 
-  CheckCircle2,
-  Info,
-  Clock
-} from 'lucide-react'
+import { AlertTriangle, Trash2, CheckCircle2, Info, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export type ConfirmationVariant = 'destructive' | 'warning' | 'info' | 'success'
@@ -107,20 +101,14 @@ export function ConfirmationDialog({
             )}
             <span>{title}</span>
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-left">
-            {description}
-          </AlertDialogDescription>
+          <AlertDialogDescription className="text-left">{description}</AlertDialogDescription>
         </AlertDialogHeader>
 
         {/* Custom content */}
-        {children && (
-          <div className="py-4">
-            {children}
-          </div>
-        )}
+        {children && <div className="py-4">{children}</div>}
 
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-          <AlertDialogCancel 
+          <AlertDialogCancel
             onClick={handleCancel}
             disabled={isLoading}
             className="w-full sm:w-auto"
@@ -130,10 +118,7 @@ export function ConfirmationDialog({
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
-            className={cn(
-              'w-full sm:w-auto',
-              config.confirmClass
-            )}
+            className={cn('w-full sm:w-auto', config.confirmClass)}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
@@ -183,9 +168,7 @@ export function TaskDeleteConfirmation({
       <div className="bg-muted/50 rounded-lg p-4 border-l-4 border-red-500">
         <h4 className="font-medium text-sm mb-1">{taskTitle}</h4>
         {taskDescription && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {taskDescription}
-          </p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{taskDescription}</p>
         )}
       </div>
     </ConfirmationDialog>
@@ -295,12 +278,7 @@ export function UnsavedChangesConfirmation({
     >
       {onSave && (
         <div className="flex justify-center">
-          <Button 
-            onClick={onSave} 
-            disabled={isLoading}
-            className="w-full"
-            variant="outline"
-          >
+          <Button onClick={onSave} disabled={isLoading} className="w-full" variant="outline">
             Save and Close
           </Button>
         </div>

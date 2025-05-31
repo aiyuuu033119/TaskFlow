@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
-import { TaskFilters } from '@/types'
 
 const demoScenarios = [
   {
@@ -61,10 +60,10 @@ const demoScenarios = [
     title: 'Multiple Filters',
     description: 'No tasks match multiple filters',
     variant: 'filtered' as const,
-    filters: { 
+    filters: {
       status: ['PENDING', 'IN_PROGRESS'],
       priority: ['HIGH', 'URGENT'],
-      search: 'meeting'
+      search: 'meeting',
     },
     totalTasks: 20,
   },
@@ -99,9 +98,7 @@ export function EmptyStateDemo() {
               <Card
                 key={scenario.id}
                 className={`cursor-pointer transition-all hover:shadow-md ${
-                  selectedScenario.id === scenario.id
-                    ? 'ring-2 ring-primary bg-primary/5'
-                    : ''
+                  selectedScenario.id === scenario.id ? 'ring-2 ring-primary bg-primary/5' : ''
                 }`}
                 onClick={() => setSelectedScenario(scenario)}
               >
@@ -109,9 +106,7 @@ export function EmptyStateDemo() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="font-medium">{scenario.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {scenario.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">{scenario.description}</p>
                       <div className="flex gap-2 mt-2">
                         <Badge variant="outline" className="text-xs">
                           {scenario.variant}
@@ -138,8 +133,7 @@ export function EmptyStateDemo() {
                 <Badge variant="outline">{selectedScenario.variant}</Badge>
               </div>
               <div>
-                <span className="font-medium">Total Tasks:</span>{' '}
-                {selectedScenario.totalTasks}
+                <span className="font-medium">Total Tasks:</span> {selectedScenario.totalTasks}
               </div>
               {Object.keys(selectedScenario.filters).length > 0 && (
                 <div>
@@ -157,7 +151,7 @@ export function EmptyStateDemo() {
                     ))}
                     {selectedScenario.filters.search && (
                       <Badge variant="secondary" className="text-xs">
-                        Search: "{selectedScenario.filters.search}"
+                        Search: &ldquo;{selectedScenario.filters.search}&rdquo;
                       </Badge>
                     )}
                   </div>
@@ -191,15 +185,15 @@ export function EmptyStateDemo() {
             <CardContent>
               <div className="space-y-2">
                 <Button onClick={handleAddTask} className="w-full">
-                  Test "Add Task" Action
+                  Test &ldquo;Add Task&rdquo; Action
                 </Button>
-                <Button 
-                  onClick={handleClearFilters} 
-                  variant="outline" 
+                <Button
+                  onClick={handleClearFilters}
+                  variant="outline"
                   className="w-full"
                   disabled={Object.keys(selectedScenario.filters).length === 0}
                 >
-                  Test "Clear Filters" Action
+                  Test &ldquo;Clear Filters&rdquo; Action
                 </Button>
               </div>
               <div className="mt-4">

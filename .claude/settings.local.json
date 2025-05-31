@@ -27,7 +27,8 @@
       "Bash(true)",
       "Bash(rm:*)",
       "Bash(pkill:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx prettier:*)"
     ],
     "deny": []
   },
