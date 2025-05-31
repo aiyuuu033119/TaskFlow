@@ -178,10 +178,39 @@ npm run test:coverage
 
 ### Vercel (Recommended)
 
+#### Deploy with Vercel CLI
+
+1. Install Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Deploy:
+```bash
+vercel
+```
+
+#### Deploy via GitHub Integration
+
 1. Push your code to GitHub
-2. Import your repository on [Vercel](https://vercel.com)
-3. Configure environment variables
+2. Import your repository on [Vercel](https://vercel.com/new)
+3. Configure environment variables:
+   - `DATABASE_URL` - Your production database URL (PostgreSQL recommended)
+   - `NEXT_PUBLIC_APP_URL` - Your production URL (e.g., https://your-app.vercel.app)
 4. Deploy!
+
+#### Environment Variables for Vercel
+
+In your Vercel project settings, add:
+
+```env
+# Required
+DATABASE_URL=your_production_database_url
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
+
+# Optional
+NODE_ENV=production
+```
 
 ### Docker
 
