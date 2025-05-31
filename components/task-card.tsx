@@ -14,8 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Task, TaskPriority, TaskStatus } from '@/types'
-import { CalendarDays, Clock, Edit, Trash2, CheckCircle2, Circle, PlayCircle, XCircle } from 'lucide-react'
+import { type Task, type TaskPriority, type TaskStatus } from '@/types'
+import {
+  CalendarDays,
+  Clock,
+  Edit,
+  Trash2,
+  CheckCircle2,
+  Circle,
+  PlayCircle,
+  XCircle,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface TaskCardProps {
@@ -50,19 +59,19 @@ const statusColors: Record<TaskStatus, string> = {
   CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 }
 
-export function TaskCard({ 
-  task, 
-  onStatusChange, 
-  onEdit, 
-  onDelete, 
+export function TaskCard({
+  task,
+  onStatusChange,
+  onEdit,
+  onDelete,
   isLoading = false,
   isSelected = false,
   onSelectChange,
-  showCheckbox = false
+  showCheckbox = false,
 }: TaskCardProps) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  
+
   const isCompleted = task.status === 'COMPLETED'
   const isCancelled = task.status === 'CANCELLED'
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !isCompleted
@@ -127,7 +136,7 @@ export function TaskCard({
     return status
       .toLowerCase()
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ')
   }
 
@@ -137,9 +146,12 @@ export function TaskCard({
         'group relative overflow-hidden transition-all duration-300',
         'hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
         'border-muted/50 bg-gradient-to-br from-background to-muted/10',
-        isCompleted && 'opacity-75 bg-gradient-to-br from-background to-green-50/50 dark:to-green-950/20',
-        isCancelled && 'opacity-60 bg-gradient-to-br from-background to-gray-50/50 dark:to-gray-950/20',
-        isOverdue && 'border-red-200 bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10',
+        isCompleted &&
+          'opacity-75 bg-gradient-to-br from-background to-green-50/50 dark:to-green-950/20',
+        isCancelled &&
+          'opacity-60 bg-gradient-to-br from-background to-gray-50/50 dark:to-gray-950/20',
+        isOverdue &&
+          'border-red-200 bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10',
         isLoading && 'opacity-60 pointer-events-none',
       )}
     >
@@ -213,26 +225,32 @@ export function TaskCard({
       <CardContent className="pt-0">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={cn(
                 'text-xs border-0 flex items-center gap-1 px-2.5 py-1',
                 'shadow-sm backdrop-blur-sm',
-                priorityColors[task.priority] || priorityColors.MEDIUM
+                priorityColors[task.priority] || priorityColors.MEDIUM,
               )}
             >
-              <span className="text-xs leading-none">{priorityIcons[task.priority] || priorityIcons.MEDIUM}</span>
+              <span className="text-xs leading-none">
+                {priorityIcons[task.priority] || priorityIcons.MEDIUM}
+              </span>
               <span className="font-medium">
-                {task.priority ? task.priority.charAt(0) + task.priority.slice(1).toLowerCase() : 'Medium'}
+                {task.priority
+                  ? task.priority.charAt(0) + task.priority.slice(1).toLowerCase()
+                  : 'Medium'}
               </span>
             </Badge>
             {onStatusChange ? (
               <Select value={task.status} onValueChange={handleStatusChange} disabled={isLoading}>
-                <SelectTrigger className={cn(
-                  'h-7 text-xs px-2.5 py-1 gap-1 border-0',
-                  'shadow-sm backdrop-blur-sm hover:shadow-md transition-shadow',
-                  statusColors[task.status]
-                )}>
+                <SelectTrigger
+                  className={cn(
+                    'h-7 text-xs px-2.5 py-1 gap-1 border-0',
+                    'shadow-sm backdrop-blur-sm hover:shadow-md transition-shadow',
+                    statusColors[task.status],
+                  )}
+                >
                   <div className="flex items-center gap-1">
                     {getStatusIcon(task.status, 'sm')}
                     <span className="font-medium">{formatStatus(task.status)}</span>
@@ -266,11 +284,14 @@ export function TaskCard({
                 </SelectContent>
               </Select>
             ) : (
-              <Badge variant="outline" className={cn(
-                'text-xs border-0 px-2.5 py-1',
-                'shadow-sm backdrop-blur-sm',
-                statusColors[task.status]
-              )}>
+              <Badge
+                variant="outline"
+                className={cn(
+                  'text-xs border-0 px-2.5 py-1',
+                  'shadow-sm backdrop-blur-sm',
+                  statusColors[task.status],
+                )}
+              >
                 <div className="flex items-center gap-1">
                   {getStatusIcon(task.status, 'sm')}
                   <span className="font-medium">{formatStatus(task.status)}</span>
@@ -285,7 +306,8 @@ export function TaskCard({
                 className={cn(
                   'flex items-center gap-1.5 px-2 py-0.5 rounded-full',
                   'bg-muted/50 backdrop-blur-sm',
-                  isOverdue && 'bg-red-100/50 text-red-600 dark:bg-red-900/20 dark:text-red-400 font-medium',
+                  isOverdue &&
+                    'bg-red-100/50 text-red-600 dark:bg-red-900/20 dark:text-red-400 font-medium',
                 )}
               >
                 <CalendarDays className="h-3 w-3" />
@@ -305,7 +327,7 @@ export function TaskCard({
         open={showDeleteConfirmation}
         onOpenChange={setShowDeleteConfirmation}
         taskTitle={task.title}
-        taskDescription={task.description}
+        taskDescription={task.description || undefined}
         onConfirm={handleDeleteConfirm}
         isLoading={isDeleting}
       />

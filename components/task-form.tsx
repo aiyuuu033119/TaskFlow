@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { UnsavedChangesConfirmation } from '@/components/ui/confirmation-dialog'
-import { Task, CreateTaskData, UpdateTaskData, TaskPriority } from '@/types'
+import { type Task, type CreateTaskData, type UpdateTaskData, type TaskPriority } from '@/types'
 import { useAsync } from '@/hooks/use-async'
 import { CalendarDays, X } from 'lucide-react'
 
@@ -29,12 +29,18 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   const [description, setDescription] = useState(task?.description || '')
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'LOW')
   const [dueDate, setDueDate] = useState(
-    task?.dueDate 
-      ? new Date(task.dueDate).toISOString().split('T')[0] 
-      : new Date().toISOString().split('T')[0]
+    task?.dueDate
+      ? new Date(task.dueDate).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
   )
 
-  const { loading: asyncLoading, execute } = useAsync(onSubmit)
+  const { loading: asyncLoading, execute } = useAsync(async (data: any) => {
+    const result = onSubmit(data)
+    if (result instanceof Promise) {
+      return result
+    }
+    return Promise.resolve()
+  })
   const isLoading = externalLoading || asyncLoading
   const isEditing = !!task
   const isValid = title.trim().length > 0
@@ -67,9 +73,16 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
     <Card className="w-full">
       <CardHeader className="pb-3 sm:pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base sm:text-lg">{isEditing ? 'Edit Task' : 'Create New Task'}</CardTitle>
+          <CardTitle className="text-base sm:text-lg">
+            {isEditing ? 'Edit Task' : 'Create New Task'}
+          </CardTitle>
           {onCancel && (
-            <Button variant="ghost" size="sm" onClick={onCancel} className="h-8 w-8 sm:h-9 sm:w-9 p-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onCancel}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+            >
               <X className="h-4 w-4" />
             </Button>
           )}
@@ -168,8 +181,10 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
                   <Spinner size="sm" />
                   Saving...
                 </div>
+              ) : isEditing ? (
+                'Update Task'
               ) : (
-                isEditing ? 'Update Task' : 'Create Task'
+                'Create Task'
               )}
             </Button>
             {onCancel && (

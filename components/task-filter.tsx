@@ -13,20 +13,20 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ClearFiltersConfirmation } from '@/components/ui/confirmation-dialog'
-import { TaskFilters, TaskPriority, TaskStatus } from '@/types'
-import { 
-  Search, 
-  Filter, 
-  X, 
-  SortAsc, 
-  SortDesc, 
-  ChevronDown, 
+import { type TaskFilters, type TaskPriority, type TaskStatus } from '@/types'
+import {
+  Search,
+  Filter,
+  X,
+  SortAsc,
+  SortDesc,
+  ChevronDown,
   ChevronUp,
   Circle,
   PlayCircle,
   CheckCircle2,
   XCircle,
-  Sparkles
+  Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -42,18 +42,67 @@ interface TaskFilterProps {
   }
 }
 
-const statusOptions: { value: TaskStatus; label: string; icon: React.ReactNode; color: string }[] = [
-  { value: 'PENDING', label: 'Pending', icon: <Circle className="h-3 w-3" />, color: 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:hover:bg-gray-800' },
-  { value: 'IN_PROGRESS', label: 'In Progress', icon: <PlayCircle className="h-3 w-3" />, color: 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900' },
-  { value: 'COMPLETED', label: 'Completed', icon: <CheckCircle2 className="h-3 w-3" />, color: 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:hover:bg-green-900' },
-  { value: 'CANCELLED', label: 'Cancelled', icon: <XCircle className="h-3 w-3" />, color: 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-900' },
-]
+const statusOptions: { value: TaskStatus; label: string; icon: React.ReactNode; color: string }[] =
+  [
+    {
+      value: 'PENDING',
+      label: 'Pending',
+      icon: <Circle className="h-3 w-3" />,
+      color:
+        'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:hover:bg-gray-800',
+    },
+    {
+      value: 'IN_PROGRESS',
+      label: 'In Progress',
+      icon: <PlayCircle className="h-3 w-3" />,
+      color:
+        'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900',
+    },
+    {
+      value: 'COMPLETED',
+      label: 'Completed',
+      icon: <CheckCircle2 className="h-3 w-3" />,
+      color:
+        'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:hover:bg-green-900',
+    },
+    {
+      value: 'CANCELLED',
+      label: 'Cancelled',
+      icon: <XCircle className="h-3 w-3" />,
+      color:
+        'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-900',
+    },
+  ]
 
 const priorityOptions: { value: TaskPriority; label: string; icon: string; color: string }[] = [
-  { value: 'LOW', label: 'Low', icon: '🟢', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900' },
-  { value: 'MEDIUM', label: 'Medium', icon: '🟡', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:hover:bg-yellow-900' },
-  { value: 'HIGH', label: 'High', icon: '🟠', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-300 dark:hover:bg-orange-900' },
-  { value: 'URGENT', label: 'Urgent', icon: '🔴', color: 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-900' },
+  {
+    value: 'LOW',
+    label: 'Low',
+    icon: '🟢',
+    color:
+      'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900',
+  },
+  {
+    value: 'MEDIUM',
+    label: 'Medium',
+    icon: '🟡',
+    color:
+      'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:hover:bg-yellow-900',
+  },
+  {
+    value: 'HIGH',
+    label: 'High',
+    icon: '🟠',
+    color:
+      'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-300 dark:hover:bg-orange-900',
+  },
+  {
+    value: 'URGENT',
+    label: 'Urgent',
+    icon: '🔴',
+    color:
+      'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-900',
+  },
 ]
 
 const sortOptions = [
@@ -107,7 +156,7 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
 
   const handleClearFilters = () => {
     const activeFilterCount = getActiveFilterCount()
-    
+
     // Only show confirmation if there are multiple active filters
     if (activeFilterCount > 2) {
       setShowClearConfirmation(true)
@@ -152,20 +201,20 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
           </div>
           <div className="flex items-center gap-1">
             {hasActiveFilters && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleClearFilters} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearFilters}
                 className="h-8 px-2 text-xs hover:bg-destructive/10 hover:text-destructive"
               >
                 <X className="h-3 w-3 mr-1" />
                 Clear all
               </Button>
             )}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsExpanded(!isExpanded)} 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsExpanded(!isExpanded)}
               className="h-8 w-8"
             >
               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -227,7 +276,7 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
             <div className="space-y-2.5">
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium">Status</label>
-                {filters.status?.length > 0 && (
+                {filters.status && filters.status.length > 0 && (
                   <Badge variant="secondary" className="text-xs px-1.5 py-0">
                     {filters.status.length}
                   </Badge>
@@ -241,9 +290,9 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
                     className={cn(
                       'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
                       'border hover:shadow-sm',
-                      filters.status?.includes(option.value) 
-                        ? option.color + ' border-transparent shadow-sm' 
-                        : 'bg-background border-border hover:border-primary/50'
+                      filters.status?.includes(option.value)
+                        ? option.color + ' border-transparent shadow-sm'
+                        : 'bg-background border-border hover:border-primary/50',
                     )}
                   >
                     {option.icon}
@@ -257,7 +306,7 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
             <div className="space-y-2.5">
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium">Priority</label>
-                {filters.priority?.length > 0 && (
+                {filters.priority && filters.priority.length > 0 && (
                   <Badge variant="secondary" className="text-xs px-1.5 py-0">
                     {filters.priority.length}
                   </Badge>
@@ -271,9 +320,9 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
                     className={cn(
                       'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
                       'border hover:shadow-sm',
-                      filters.priority?.includes(option.value) 
-                        ? option.color + ' border-transparent shadow-sm' 
-                        : 'bg-background border-border hover:border-primary/50'
+                      filters.priority?.includes(option.value)
+                        ? option.color + ' border-transparent shadow-sm'
+                        : 'bg-background border-border hover:border-primary/50',
                     )}
                   >
                     <span className="text-xs leading-none">{option.icon}</span>

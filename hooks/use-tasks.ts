@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { taskApi, type TaskFilters, type CreateTaskData, type UpdateTaskData } from '@/lib/api-client'
+import {
+  taskApi,
+  type TaskFilters,
+  type CreateTaskData,
+  type UpdateTaskData,
+} from '@/lib/api-client'
 import type { Task, TaskStatus, TaskPriority } from '@/types/task'
 import { useToast } from '@/hooks/use-toast'
 
@@ -22,16 +27,6 @@ export function useTasks(filters: TaskFilters = {}) {
   })
 }
 
-// Hook for fetching a single task
-export function useTask(id: string) {
-  return useQuery({
-    queryKey: taskKeys.detail(id),
-    queryFn: () => taskApi.get(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-  })
-}
-
 // Hook for creating a task
 export function useCreateTask() {
   const queryClient = useQueryClient()
@@ -42,7 +37,7 @@ export function useCreateTask() {
     onSuccess: (newTask) => {
       // Invalidate and refetch task lists
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() })
-      
+
       toast({
         title: 'Task created',
         description: `"${newTask.title}" has been created successfully.`,
@@ -64,8 +59,7 @@ export function useUpdateTask() {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateTaskData }) => 
-      taskApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateTaskData }) => taskApi.update(id, data),
     onMutate: async ({ id, data }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: taskKeys.detail(id) })
@@ -83,18 +77,15 @@ export function useUpdateTask() {
         }))
 
         // Update task in all list queries
-        queryClient.setQueriesData(
-          { queryKey: taskKeys.lists() },
-          (old: any) => {
-            if (!old?.tasks) return old
-            return {
-              ...old,
-              tasks: old.tasks.map((task: Task) =>
-                task.id === id ? { ...task, ...data, updatedAt: new Date() } : task
-              ),
-            }
+        queryClient.setQueriesData({ queryKey: taskKeys.lists() }, (old: any) => {
+          if (!old?.tasks) return old
+          return {
+            ...old,
+            tasks: old.tasks.map((task: Task) =>
+              task.id === id ? { ...task, ...data, updatedAt: new Date() } : task,
+            ),
           }
-        )
+        })
       }
 
       return { previousTask }
@@ -115,7 +106,7 @@ export function useUpdateTask() {
     onSuccess: (updatedTask) => {
       // Update the cache with server response
       queryClient.setQueryData(taskKeys.detail(updatedTask.id), updatedTask)
-      
+
       toast({
         title: 'Task updated',
         description: `"${updatedTask.title}" has been updated successfully.`,
@@ -144,20 +135,17 @@ export function useDeleteTask() {
       const previousLists = queryClient.getQueriesData({ queryKey: taskKeys.lists() })
 
       // Optimistically remove the task from all list queries
-      queryClient.setQueriesData(
-        { queryKey: taskKeys.lists() },
-        (old: any) => {
-          if (!old?.tasks) return old
-          return {
-            ...old,
-            tasks: old.tasks.filter((task: Task) => task.id !== id),
-            pagination: {
-              ...old.pagination,
-              total: old.pagination.total - 1,
-            },
-          }
+      queryClient.setQueriesData({ queryKey: taskKeys.lists() }, (old: any) => {
+        if (!old?.tasks) return old
+        return {
+          ...old,
+          tasks: old.tasks.filter((task: Task) => task.id !== id),
+          pagination: {
+            ...old.pagination,
+            total: old.pagination.total - 1,
+          },
         }
-      )
+      })
 
       return { previousLists }
     },
@@ -178,7 +166,7 @@ export function useDeleteTask() {
     onSuccess: (result) => {
       // Remove the task from individual cache
       queryClient.removeQueries({ queryKey: taskKeys.detail(result.id) })
-      
+
       toast({
         title: 'Task deleted',
         description: 'The task has been deleted successfully.',
@@ -197,7 +185,7 @@ export function useUpdateTaskStatus() {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: TaskStatus }) => 
+    mutationFn: ({ id, status }: { id: string; status: TaskStatus }) =>
       taskApi.updateStatus(id, status),
     onMutate: async ({ id, status }) => {
       // Cancel outgoing refetches
@@ -218,18 +206,15 @@ export function useUpdateTaskStatus() {
       }
 
       // Update task in all list queries
-      queryClient.setQueriesData(
-        { queryKey: taskKeys.lists() },
-        (old: any) => {
-          if (!old?.tasks) return old
-          return {
-            ...old,
-            tasks: old.tasks.map((task: Task) =>
-              task.id === id ? { ...task, ...optimisticUpdate } : task
-            ),
-          }
+      queryClient.setQueriesData({ queryKey: taskKeys.lists() }, (old: any) => {
+        if (!old?.tasks) return old
+        return {
+          ...old,
+          tasks: old.tasks.map((task: Task) =>
+            task.id === id ? { ...task, ...optimisticUpdate } : task,
+          ),
         }
-      )
+      })
 
       return { previousTask }
     },
@@ -260,17 +245,17 @@ export function useBulkUpdateTasks() {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: ({ 
-      ids, 
-      data 
-    }: { 
-      ids: string[]; 
-      data: { priority?: TaskPriority; status?: TaskStatus } 
+    mutationFn: ({
+      ids,
+      data,
+    }: {
+      ids: string[]
+      data: { priority?: TaskPriority; status?: TaskStatus }
     }) => taskApi.bulkUpdate(ids, data),
     onSuccess: (updatedTasks) => {
       // Invalidate all task queries
       queryClient.invalidateQueries({ queryKey: taskKeys.all })
-      
+
       toast({
         title: 'Tasks updated',
         description: `${updatedTasks.length} tasks have been updated successfully.`,
@@ -300,20 +285,17 @@ export function useBulkDeleteTasks() {
       const previousLists = queryClient.getQueriesData({ queryKey: taskKeys.lists() })
 
       // Optimistically remove the tasks from all list queries
-      queryClient.setQueriesData(
-        { queryKey: taskKeys.lists() },
-        (old: any) => {
-          if (!old?.tasks) return old
-          return {
-            ...old,
-            tasks: old.tasks.filter((task: Task) => !ids.includes(task.id)),
-            pagination: {
-              ...old.pagination,
-              total: old.pagination.total - ids.length,
-            },
-          }
+      queryClient.setQueriesData({ queryKey: taskKeys.lists() }, (old: any) => {
+        if (!old?.tasks) return old
+        return {
+          ...old,
+          tasks: old.tasks.filter((task: Task) => !ids.includes(task.id)),
+          pagination: {
+            ...old.pagination,
+            total: old.pagination.total - ids.length,
+          },
         }
-      )
+      })
 
       return { previousLists }
     },
@@ -333,10 +315,10 @@ export function useBulkDeleteTasks() {
     },
     onSuccess: (result) => {
       // Remove the tasks from individual cache
-      result.deletedIds.forEach(id => {
+      result.deletedIds.forEach((id) => {
         queryClient.removeQueries({ queryKey: taskKeys.detail(id) })
       })
-      
+
       toast({
         title: 'Tasks deleted',
         description: `${result.deletedIds.length} tasks have been deleted successfully.`,

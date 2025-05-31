@@ -47,12 +47,9 @@ class ApiClient {
     this.baseUrl = baseUrl
   }
 
-  private async request<T>(
-    endpoint: string, 
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +79,7 @@ class ApiClient {
   // Task CRUD operations
   async getTasks(filters: TaskFilters = {}): Promise<TasksResponse> {
     const searchParams = new URLSearchParams()
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         searchParams.append(key, value.toString())
@@ -91,12 +88,8 @@ class ApiClient {
 
     const queryString = searchParams.toString()
     const endpoint = queryString ? `/tasks?${queryString}` : '/tasks'
-    
-    return this.request<TasksResponse>(endpoint)
-  }
 
-  async getTask(id: string): Promise<Task> {
-    return this.request<Task>(`/tasks/${id}`)
+    return this.request<TasksResponse>(endpoint)
   }
 
   async createTask(data: CreateTaskData): Promise<Task> {
@@ -121,8 +114,8 @@ class ApiClient {
 
   // Bulk operations
   async bulkUpdateTasks(
-    ids: string[], 
-    data: { priority?: TaskPriority; status?: TaskStatus }
+    ids: string[],
+    data: { priority?: TaskPriority; status?: TaskStatus },
   ): Promise<Task[]> {
     return this.request<Task[]>('/tasks/bulk', {
       method: 'PATCH',
@@ -143,7 +136,10 @@ class ApiClient {
   }
 
   // Search tasks
-  async searchTasks(query: string, filters: Omit<TaskFilters, 'search'> = {}): Promise<TasksResponse> {
+  async searchTasks(
+    query: string,
+    filters: Omit<TaskFilters, 'search'> = {},
+  ): Promise<TasksResponse> {
     return this.getTasks({ ...filters, search: query })
   }
 }
@@ -155,19 +151,18 @@ export const apiClient = new ApiClient()
 export const taskApi = {
   // CRUD operations
   list: (filters?: TaskFilters) => apiClient.getTasks(filters),
-  get: (id: string) => apiClient.getTask(id),
   create: (data: CreateTaskData) => apiClient.createTask(data),
   update: (id: string, data: UpdateTaskData) => apiClient.updateTask(id, data),
   delete: (id: string) => apiClient.deleteTask(id),
-  
+
   // Bulk operations
-  bulkUpdate: (ids: string[], data: { priority?: TaskPriority; status?: TaskStatus }) => 
+  bulkUpdate: (ids: string[], data: { priority?: TaskPriority; status?: TaskStatus }) =>
     apiClient.bulkUpdateTasks(ids, data),
   bulkDelete: (ids: string[]) => apiClient.bulkDeleteTasks(ids),
-  
+
   // Convenience methods
   updateStatus: (id: string, status: TaskStatus) => apiClient.updateTaskStatus(id, status),
-  search: (query: string, filters?: Omit<TaskFilters, 'search'>) => 
+  search: (query: string, filters?: Omit<TaskFilters, 'search'>) =>
     apiClient.searchTasks(query, filters),
 }
 
@@ -176,7 +171,7 @@ export class TaskApiError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
-    public details?: any
+    public details?: any,
   ) {
     super(message)
     this.name = 'TaskApiError'
@@ -255,14 +250,14 @@ export class TaskCache {
     this.cache.delete(id)
     // Also update list cache to remove the task
     this.listCache.forEach((response, key) => {
-      const updatedTasks = response.tasks.filter(task => task.id !== id)
+      const updatedTasks = response.tasks.filter((task) => task.id !== id)
       this.listCache.set(key, {
         ...response,
         tasks: updatedTasks,
         pagination: {
           ...response.pagination,
-          total: response.pagination.total - 1
-        }
+          total: response.pagination.total - 1,
+        },
       })
     })
   }

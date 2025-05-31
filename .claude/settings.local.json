@@ -17,8 +17,17 @@
       "Bash(ls:*)",
       "Bash(./scripts/push-github.sh:*)",
       "Bash(curl:*)",
-      "Bash(mkdir:*)",
-      "Bash(npx husky install)"
+      "Bash(find:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(mv:*)",
+      "Bash(rmdir:*)",
+      "Bash(npx prisma:*)",
+      "Bash(kill:*)",
+      "Bash(true)",
+      "Bash(rm:*)",
+      "Bash(pkill:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   },
