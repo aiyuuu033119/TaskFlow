@@ -28,7 +28,9 @@
       "Bash(rm:*)",
       "Bash(pkill:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)"
     ],
     "deny": []
   },

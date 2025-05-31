@@ -73,10 +73,133 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Function to generate commit message based on changes
+generate_commit_message() {
+    echo -e "${YELLOW}No commit message provided. Analyzing changes...${NC}"
+    
+    # Get file changes
+    ADDED=$(git diff --cached --name-only --diff-filter=A | wc -l)
+    MODIFIED=$(git diff --cached --name-only --diff-filter=M | wc -l)
+    DELETED=$(git diff --cached --name-only --diff-filter=D | wc -l)
+    
+    # Get changed files for more context
+    CHANGED_FILES=$(git diff --cached --name-only | head -5)
+    
+    # Analyze the type of changes for better commit messages
+    if [[ $(git diff --cached --name-only | grep -E "\.(test|spec)\.(ts|tsx|js|jsx)$" | wc -l) -gt 0 ]]; then
+        MSG_PREFIX="test: "
+        MSG_TYPE="tests"
+    elif [[ $(git diff --cached --name-only | grep -E "^docs/|README|\.md$" | wc -l) -gt 0 ]]; then
+        MSG_PREFIX="docs: "
+        MSG_TYPE="documentation"
+    elif [[ $(git diff --cached --name-only | grep -E "\.(css|scss|less)$|style" | wc -l) -gt 0 ]]; then
+        MSG_PREFIX="style: "
+        MSG_TYPE="styles"
+    elif [[ $(git diff --cached --name-only | grep -E "^\.github/|^scripts/|config|^\..*rc" | wc -l) -gt 0 ]]; then
+        MSG_PREFIX="chore: "
+        MSG_TYPE="configuration"
+    elif [[ $(git diff --cached --name-only | grep -E "package.*\.json|yarn\.lock|package-lock\.json" | wc -l) -gt 0 ]]; then
+        MSG_PREFIX="chore: "
+        MSG_TYPE="dependencies"
+    elif [[ $DELETED -gt $MODIFIED ]]; then
+        MSG_PREFIX="refactor: "
+        MSG_TYPE="cleanup"
+    elif [[ $ADDED -gt $MODIFIED ]]; then
+        MSG_PREFIX="feat: "
+        MSG_TYPE="new features"
+    elif [[ $BRANCH_TYPE == "hotfix" ]]; then
+        MSG_PREFIX="fix: "
+        MSG_TYPE="bug fixes"
+    elif [[ $BRANCH_TYPE == "release" ]]; then
+        MSG_PREFIX="chore: "
+        MSG_TYPE="release preparation"
+    else
+        MSG_PREFIX="fix: "
+        MSG_TYPE="updates"
+    fi
+    
+    # Get more specific context from changed files
+    COMPONENTS_CHANGED=$(git diff --cached --name-only | grep -E "^components/" | wc -l)
+    API_CHANGED=$(git diff --cached --name-only | grep -E "^app/api/" | wc -l)
+    HOOKS_CHANGED=$(git diff --cached --name-only | grep -E "^hooks/" | wc -l)
+    
+    # Build more descriptive message based on what changed
+    if [[ $COMPONENTS_CHANGED -gt 0 && $API_CHANGED -eq 0 ]]; then
+        AREA="components"
+    elif [[ $API_CHANGED -gt 0 && $COMPONENTS_CHANGED -eq 0 ]]; then
+        AREA="API"
+    elif [[ $HOOKS_CHANGED -gt 0 ]]; then
+        AREA="hooks"
+    elif [[ $(git diff --cached --name-only | grep -E "^scripts/" | wc -l) -gt 0 ]]; then
+        AREA="scripts"
+    else
+        AREA="multiple areas"
+    fi
+    
+    # Build commit message
+    if [[ $ADDED -eq 0 && $MODIFIED -eq 0 && $DELETED -eq 0 ]]; then
+        echo -e "${RED}No changes detected to commit${NC}"
+        exit 1
+    fi
+    
+    # Create descriptive message based on area and changes
+    if [[ $AREA != "multiple areas" ]]; then
+        # Single area changed - be specific
+        if [[ $ADDED -gt 0 && $MODIFIED -eq 0 && $DELETED -eq 0 ]]; then
+            ACTION="add new"
+        elif [[ $MODIFIED -gt 0 && $ADDED -eq 0 && $DELETED -eq 0 ]]; then
+            ACTION="update"
+        elif [[ $DELETED -gt 0 && $ADDED -eq 0 && $MODIFIED -eq 0 ]]; then
+            ACTION="remove"
+        elif [[ $DELETED -gt $MODIFIED ]]; then
+            ACTION="clean up"
+        else
+            ACTION="update"
+        fi
+        GENERATED_MSG="${MSG_PREFIX}${ACTION} ${AREA}"
+    else
+        # Multiple areas - be generic but informative
+        MSG_PARTS=()
+        [[ $ADDED -gt 0 ]] && MSG_PARTS+=("add $ADDED files")
+        [[ $MODIFIED -gt 0 ]] && MSG_PARTS+=("update $MODIFIED files")
+        [[ $DELETED -gt 0 ]] && MSG_PARTS+=("remove $DELETED files")
+        MSG_DETAIL=$(IFS=", "; echo "${MSG_PARTS[*]}")
+        GENERATED_MSG="${MSG_PREFIX}${MSG_DETAIL}"
+    fi
+    
+    # Show generated message and ask for confirmation
+    echo -e "${GREEN}Generated commit message:${NC}"
+    echo -e "  ${BLUE}${GENERATED_MSG}${NC}"
+    echo ""
+    echo -e "${YELLOW}Changed files (first 5):${NC}"
+    echo "$CHANGED_FILES" | sed 's/^/  /'
+    echo ""
+    read -p "Use this message? [Y/n/e(dit)]: " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Ee]$ ]]; then
+        # Allow editing
+        echo -e "${YELLOW}Enter your commit message:${NC}"
+        read -r COMMIT_MESSAGE
+    elif [[ $REPLY =~ ^[Nn]$ ]]; then
+        echo -e "${RED}Aborting. Please run again with a commit message.${NC}"
+        exit 1
+    else
+        COMMIT_MESSAGE="$GENERATED_MSG"
+    fi
+}
+
 # Check if commit message is provided
 if [ -z "$COMMIT_MESSAGE" ]; then
-    echo -e "${RED}Error: Please provide a commit message${NC}"
-    usage
+    # Check if there are any staged changes
+    if [[ -z $(git diff --cached --name-only) ]]; then
+        # No staged changes, stage all changes
+        echo -e "${YELLOW}No staged changes. Staging all changes...${NC}"
+        git add .
+    fi
+    
+    # Generate commit message based on changes
+    generate_commit_message
 fi
 
 # Generate branch name following GIT_FLOW.md conventions
