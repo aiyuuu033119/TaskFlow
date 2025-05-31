@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
+import type { TaskStatus, TaskPriority, TaskFilters } from '@/types/task'
 
 const demoScenarios = [
   {
@@ -44,7 +45,7 @@ const demoScenarios = [
     title: 'Filtered by Status',
     description: 'No tasks match status filter',
     variant: 'filtered' as const,
-    filters: { status: ['IN_PROGRESS'] },
+    filters: { status: ['IN_PROGRESS' as TaskStatus] },
     totalTasks: 10,
   },
   {
@@ -52,7 +53,7 @@ const demoScenarios = [
     title: 'Filtered by Priority',
     description: 'No tasks match priority filter',
     variant: 'filtered' as const,
-    filters: { priority: ['URGENT'] },
+    filters: { priority: ['URGENT' as TaskPriority] },
     totalTasks: 7,
   },
   {
@@ -61,8 +62,8 @@ const demoScenarios = [
     description: 'No tasks match multiple filters',
     variant: 'filtered' as const,
     filters: {
-      status: ['PENDING', 'IN_PROGRESS'],
-      priority: ['HIGH', 'URGENT'],
+      status: ['PENDING' as TaskStatus, 'IN_PROGRESS' as TaskStatus],
+      priority: ['HIGH' as TaskPriority, 'URGENT' as TaskPriority],
       search: 'meeting',
     },
     totalTasks: 20,
