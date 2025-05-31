@@ -14,7 +14,18 @@
     "validate": "npm run type-check && npm run lint && npm run format:check",
     "g-push": "bash scripts/push-github.sh",
     "g-merge": "bash scripts/fetch-merge-github.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:production": "playwright test --config=playwright.config.production.ts",
+    "analyze": "ANALYZE=true next build",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
