@@ -112,7 +112,7 @@ export function useUpdateTask() {
         description: `"${updatedTask.title}" has been updated successfully.`,
       })
     },
-    onSettled: (data, error, { id }) => {
+    onSettled: (_, __, { id }) => {
       // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: taskKeys.detail(id) })
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() })
@@ -231,7 +231,7 @@ export function useUpdateTaskStatus() {
         variant: 'destructive',
       })
     },
-    onSettled: (data, error, { id }) => {
+    onSettled: (_, __, { id }) => {
       // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: taskKeys.detail(id) })
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() })
@@ -299,7 +299,7 @@ export function useBulkDeleteTasks() {
 
       return { previousLists }
     },
-    onError: (error, ids, context) => {
+    onError: (error, _, context) => {
       // Rollback on error
       if (context?.previousLists) {
         context.previousLists.forEach(([queryKey, data]) => {

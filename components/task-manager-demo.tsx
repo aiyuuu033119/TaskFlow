@@ -1,21 +1,12 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import {
-  Task,
-  CreateTaskData,
-  UpdateTaskData,
-  TaskFilters,
-  TaskStatus,
-  TaskPriority,
-} from '@/types'
+import type { Task, CreateTaskData, UpdateTaskData, TaskFilters, TaskStatus } from '@/types'
 import { TaskList } from './task-list'
 import { TaskFilter } from './task-filter'
 import { AddTaskButton } from './add-task-button'
-import { TaskForm } from './task-form'
 import { TaskFormDialog } from './task-form-dialog'
 import { ErrorBoundary } from './error-boundary'
-import { TaskListSkeleton } from './ui/loading-skeleton'
 import { EmptyState } from './ui/empty-state'
 import { useToast } from '@/hooks/use-toast'
 import { useEmptyState, useIsFirstTimeUser } from '@/hooks/use-empty-state'
@@ -68,7 +59,6 @@ export function TaskManagerDemo() {
   const [filters, setFilters] = useState<TaskFilters>({})
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
-  const [isInitialLoading, setIsInitialLoading] = useState(false)
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false)
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
   const { toast } = useToast()
@@ -76,12 +66,12 @@ export function TaskManagerDemo() {
 
   // Simulate async operations with loading states
   const setTaskLoading = (taskId: string, loading: boolean) => {
-    setLoadingStates(prev => ({ ...prev, [taskId]: loading }))
+    setLoadingStates((prev) => ({ ...prev, [taskId]: loading }))
   }
 
   // Simulate network delay
   const simulateNetworkDelay = (ms: number = 800) => {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   // Filter and sort tasks
@@ -167,7 +157,7 @@ export function TaskManagerDemo() {
   const handleAddTask = async (data: CreateTaskData) => {
     try {
       await simulateNetworkDelay(600)
-      
+
       const newTask: Task = {
         id: Date.now().toString(),
         title: data.title,
@@ -178,12 +168,12 @@ export function TaskManagerDemo() {
         updatedAt: new Date(),
         dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
       }
-      
+
       // Simulate potential error
       if (Math.random() < 0.1) {
         throw new Error('Failed to create task. Please try again.')
       }
-      
+
       setTasks((prev) => [newTask, ...prev])
       setShowAddTaskDialog(false)
       toast({
@@ -205,12 +195,12 @@ export function TaskManagerDemo() {
 
     try {
       await simulateNetworkDelay(500)
-      
+
       // Simulate potential error
       if (Math.random() < 0.1) {
         throw new Error('Failed to update task. Please try again.')
       }
-      
+
       setTasks((prev) =>
         prev.map((task) =>
           task.id === editingTask.id
@@ -243,15 +233,15 @@ export function TaskManagerDemo() {
     if (!task) return
 
     setTaskLoading(taskId, true)
-    
+
     try {
       await simulateNetworkDelay(400)
-      
+
       // Simulate potential error
       if (Math.random() < 0.05) {
         throw new Error('Failed to update status. Please try again.')
       }
-      
+
       setTasks((prev) =>
         prev.map((t) =>
           t.id === taskId
@@ -286,15 +276,15 @@ export function TaskManagerDemo() {
     if (!task) return
 
     setTaskLoading(taskId, true)
-    
+
     try {
       await simulateNetworkDelay(300)
-      
+
       // Simulate potential error
       if (Math.random() < 0.05) {
         throw new Error('Failed to delete task. Please try again.')
       }
-      
+
       setTasks((prev) => prev.filter((t) => t.id !== taskId))
       setSelectedTaskIds((prev) => prev.filter((id) => id !== taskId))
       toast({
@@ -316,16 +306,16 @@ export function TaskManagerDemo() {
   const handleBulkDelete = async (taskIds: string[]) => {
     try {
       await simulateNetworkDelay(500)
-      
+
       // Simulate potential error
       if (Math.random() < 0.05) {
         throw new Error('Failed to delete tasks. Please try again.')
       }
-      
+
       const deletedCount = taskIds.length
       setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
       setSelectedTaskIds([])
-      
+
       toast({
         title: 'Tasks deleted',
         description: `${deletedCount} task${deletedCount > 1 ? 's' : ''} deleted successfully.`,
@@ -344,12 +334,12 @@ export function TaskManagerDemo() {
   const handleBulkStatusChange = async (taskIds: string[], status: TaskStatus) => {
     try {
       await simulateNetworkDelay(500)
-      
+
       // Simulate potential error
       if (Math.random() < 0.05) {
         throw new Error('Failed to update tasks. Please try again.')
       }
-      
+
       const updatedCount = taskIds.length
       setTasks((prev) =>
         prev.map((task) =>
@@ -360,11 +350,11 @@ export function TaskManagerDemo() {
                 updatedAt: new Date(),
                 completedAt: status === 'COMPLETED' ? new Date() : undefined,
               }
-            : task
-        )
+            : task,
+        ),
       )
       setSelectedTaskIds([])
-      
+
       toast({
         title: 'Tasks updated',
         description: `${updatedCount} task${updatedCount > 1 ? 's' : ''} updated to ${status.toLowerCase()}.`,
@@ -379,7 +369,6 @@ export function TaskManagerDemo() {
     }
   }
 
-
   return (
     <ErrorBoundary>
       <div className="container mx-auto p-3 sm:p-4 md:p-6 max-w-full sm:max-w-6xl">
@@ -387,10 +376,7 @@ export function TaskManagerDemo() {
           {/* Sidebar with filters and add button */}
           <div className="w-full md:w-80 lg:w-96 space-y-3 sm:space-y-4">
             <ErrorBoundary>
-              <AddTaskButton 
-                onClick={() => setShowAddTaskDialog(true)} 
-                variant="card" 
-              />
+              <AddTaskButton onClick={() => setShowAddTaskDialog(true)} variant="card" />
             </ErrorBoundary>
             <ErrorBoundary>
               <TaskFilter filters={filters} onFiltersChange={setFilters} taskCounts={taskCounts} />
@@ -429,7 +415,7 @@ export function TaskManagerDemo() {
             </ErrorBoundary>
           </div>
         </div>
-        
+
         {/* Task Form Dialog */}
         <TaskFormDialog
           open={showAddTaskDialog}

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
-import { afterEach } from 'vitest'
+import { afterEach, beforeAll, afterAll, vi } from 'vitest'
 
 // Cleanup after each test
 afterEach(() => {
@@ -33,10 +33,7 @@ process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
 const originalError = console.error
 beforeAll(() => {
   console.error = (...args: any[]) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render')
-    ) {
+    if (typeof args[0] === 'string' && args[0].includes('Warning: ReactDOM.render')) {
       return
     }
     originalError.call(console, ...args)
