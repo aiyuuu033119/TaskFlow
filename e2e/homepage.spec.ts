@@ -77,6 +77,6 @@ test.describe('Homepage', () => {
     await page.click('[aria-label*="theme"], button:has-text("Toggle theme")')
 
     // Check that theme has changed
-    await expect(htmlElement).not.toHaveAttribute('class', initialTheme)
+    await expect(htmlElement).not.toHaveAttribute('class', initialTheme || '')
   })
 })

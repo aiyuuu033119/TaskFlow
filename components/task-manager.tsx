@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { Task, TaskStatus } from '@/types/task'
+import type { Task, TaskStatus, CreateTaskData, UpdateTaskData } from '@/types/task'
 import type { TaskFilters } from '@/types'
 import { TaskList } from './task-list'
 import { TaskForm } from './task-form'
@@ -47,7 +47,7 @@ const INITIAL_TASKS: Task[] = [
 function TaskManagerContent() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS)
   const [isAddingTask, setIsAddingTask] = useState(false)
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined)
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
   const [filters, setFilters] = useState<TaskFilters>({
@@ -102,14 +102,24 @@ function TaskManagerContent() {
     filters,
   })
 
-  const handleAddTask = async (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleAddTask = async (data: CreateTaskData | UpdateTaskData) => {
+    // Type guard to ensure we have required fields for creation
+    if (!('title' in data && data.title)) {
+      throw new Error('Title is required')
+    }
+    
+    const createData = data as CreateTaskData
+    
     try {
       const newTask: Task = {
-        ...data,
         id: Date.now().toString(),
-        priority: data.priority || 'MEDIUM',
+        title: createData.title,
+        description: createData.description,
+        status: 'PENDING',
+        priority: createData.priority || 'MEDIUM',
         createdAt: new Date(),
         updatedAt: new Date(),
+        dueDate: createData.dueDate ? new Date(createData.dueDate) : undefined,
       }
 
       setTasks((prev) => [newTask, ...prev])
@@ -128,18 +138,18 @@ function TaskManagerContent() {
     }
   }
 
-  const handleUpdateTask = async (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleUpdateTask = async (data: CreateTaskData | UpdateTaskData) => {
     if (!editingTask) return
 
     try {
       const updatedTask: Task = {
         ...editingTask,
-        ...data,
+        ...(data as UpdateTaskData),
         updatedAt: new Date(),
       }
 
       setTasks((prev) => prev.map((task) => (task.id === editingTask.id ? updatedTask : task)))
-      setEditingTask(null)
+      setEditingTask(undefined)
 
       toast({
         title: 'Task updated',
@@ -231,14 +241,14 @@ function TaskManagerContent() {
     }
   }
 
-  const handleBulkStatusChange = async (status: TaskStatus) => {
+  const handleBulkStatusChange = async (taskIds: string[], status: TaskStatus) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300))
 
-      const updatedCount = selectedTaskIds.length
+      const updatedCount = taskIds.length
       setTasks((prev) =>
         prev.map((task) =>
-          selectedTaskIds.includes(task.id) ? { ...task, status, updatedAt: new Date() } : task,
+          taskIds.includes(task.id) ? { ...task, status, updatedAt: new Date() } : task,
         ),
       )
       setSelectedTaskIds([])
@@ -280,7 +290,15 @@ function TaskManagerContent() {
         <div className="grid gap-4 sm:gap-6 md:grid-cols-[1fr,400px]">
           {/* Task List */}
           <Card className="p-3 sm:p-4 md:p-6">
-            <EmptyStateWrapper config={emptyStateConfig}>
+            <EmptyStateWrapper 
+              isEmpty={filteredTasks.length === 0}
+              variant={emptyStateConfig?.variant || 'no-results'}
+              onAddTask={() => setIsAddingTask(true)}
+              onClearFilters={() => setFilters({})}
+              filters={filters}
+              searchTerm={filters.search}
+              totalTasks={tasks.length}
+            >
               <TaskList
                 tasks={filteredTasks}
                 onStatusChange={handleToggleTask}
@@ -305,7 +323,7 @@ function TaskManagerContent() {
                   onSubmit={editingTask ? handleUpdateTask : handleAddTask}
                   onCancel={() => {
                     setIsAddingTask(false)
-                    setEditingTask(null)
+                    setEditingTask(undefined)
                   }}
                   isLoading={false}
                 />

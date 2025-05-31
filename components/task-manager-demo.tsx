@@ -154,19 +154,26 @@ export function TaskManagerDemo() {
     setShowAddTaskDialog(true)
   }
 
-  const handleAddTask = async (data: CreateTaskData) => {
+  const handleAddTask = async (data: CreateTaskData | UpdateTaskData) => {
+    // Type guard to ensure we have CreateTaskData
+    if (!('title' in data && data.title)) {
+      throw new Error('Title is required for creating a task')
+    }
+    
+    const createData = data as CreateTaskData
+    
     try {
       await simulateNetworkDelay(600)
 
       const newTask: Task = {
         id: Date.now().toString(),
-        title: data.title,
-        description: data.description,
+        title: createData.title,
+        description: createData.description,
         status: 'PENDING',
-        priority: data.priority,
+        priority: createData.priority,
         createdAt: new Date(),
         updatedAt: new Date(),
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        dueDate: createData.dueDate ? new Date(createData.dueDate) : undefined,
       }
 
       // Simulate potential error
@@ -178,7 +185,7 @@ export function TaskManagerDemo() {
       setShowAddTaskDialog(false)
       toast({
         title: 'Task created',
-        description: `"${data.title}" has been added to your tasks.`,
+        description: `"${createData.title}" has been added to your tasks.`,
       })
     } catch (error) {
       toast({
