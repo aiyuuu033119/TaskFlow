@@ -33,7 +33,7 @@ A modern, performant, and intuitive task management application built with Next.
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
 | **UI Components** | [Shadcn/UI](https://ui.shadcn.com/) | Accessible component library |
 | **State Management** | [Zustand](https://zustand-demo.pmnd.rs/) | Lightweight state management |
-| **Database** | [SQLite](https://www.sqlite.org/) + [Prisma](https://www.prisma.io/) | Local database with type-safe ORM |
+| **Database** | [SQLite](https://www.sqlite.org/) + [Prisma](https://www.prisma.io/) | Lightweight embedded database with type-safe ORM |
 | **Form Handling** | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Form validation and management |
 
 ## 📋 Prerequisites
@@ -63,7 +63,7 @@ pnpm install
 
 ### 3. Set up environment variables
 
-Create a `.env.local` file in the root directory:
+Create a `.env` file in the root directory:
 
 ```env
 # Database

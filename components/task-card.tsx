@@ -30,6 +30,7 @@ interface TaskCardProps {
   isSelected?: boolean
   onSelectChange?: (selected: boolean) => void
   showCheckbox?: boolean
+  isFocused?: boolean
 }
 
 const priorityColors: Record<TaskPriority, string> = {

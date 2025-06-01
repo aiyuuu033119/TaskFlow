@@ -33,7 +33,10 @@
       "Bash(git branch:*)",
       "Bash(npm test:*)",
       "Bash(npx vercel:*)",
-      "Bash(NEXT_TELEMETRY_DISABLED=1 npm run build -- --no-lint)"
+      "Bash(NEXT_TELEMETRY_DISABLED=1 npm run build -- --no-lint)",
+      "Bash(service postgresql:*)",
+      "Bash(systemctl status:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   },

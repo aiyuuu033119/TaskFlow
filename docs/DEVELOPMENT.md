@@ -44,6 +44,37 @@ npm run type-check
 npm run validate
 ```
 
+## 🗄️ Database Management
+
+### PostgreSQL Setup
+
+See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed PostgreSQL installation and configuration instructions.
+
+### Prisma Commands
+
+```bash
+# Generate Prisma Client
+npx prisma generate
+
+# Create and apply migrations
+npx prisma migrate dev --name <migration-name>
+
+# Apply migrations in production
+npx prisma migrate deploy
+
+# Reset database (WARNING: This will delete all data)
+npx prisma migrate reset
+
+# Open Prisma Studio (Database GUI)
+npx prisma studio
+
+# Push schema changes (development only)
+npx prisma db push
+
+# Seed database
+npx prisma db seed
+```
+
 ## 🔧 Configuration Details
 
 ### ESLint Rules
