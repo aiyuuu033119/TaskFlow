@@ -1,15 +1,20 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { type Task, type TaskStatus } from '@/types/task'
 import { TaskList } from './task-list'
 import { TaskFilter } from './task-filter'
 import { AddTaskButton } from './add-task-button'
 import { TaskFormDialog } from './task-form-dialog'
+import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog'
 import { useEmptyState, useIsFirstTimeUser } from '@/hooks/use-empty-state'
 import { EmptyState } from './ui/empty-state'
 import { withErrorBoundary } from './error-boundary'
 import { Spinner } from './ui/spinner'
+import { Button } from './ui/button'
+import { Keyboard } from 'lucide-react'
+import { useKeyboardNavigation } from '@/hooks/use-keyboard-navigation'
+import { useTheme } from 'next-themes'
 import {
   useTasks,
   useCreateTask,
@@ -25,6 +30,7 @@ function TaskManagerApiContent() {
   const [isAddingTask, setIsAddingTask] = useState(false)
   const [editingTask, setEditingTask] = useState<{ id: string; data: UpdateTaskData } | null>(null)
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+  const [showShortcuts, setShowShortcuts] = useState(false)
   const [filters, setFilters] = useState<TaskFilters>({
     search: '',
     sortBy: 'createdAt',
@@ -32,6 +38,7 @@ function TaskManagerApiContent() {
     page: 1,
     limit: 20,
   })
+  const { setTheme, theme } = useTheme()
 
   // API hooks
   const { data: tasksResponse, isLoading, error, refetch } = useTasks(filters)
@@ -184,6 +191,35 @@ function TaskManagerApiContent() {
     })
   }
 
+  // Keyboard shortcuts
+  const shortcuts = [
+    // Global shortcuts
+    { key: 'k', ctrl: true, description: 'Quick add task', handler: () => setIsAddingTask(true) },
+    { key: '?', description: 'Show shortcuts help', handler: () => setShowShortcuts(true) },
+    { key: '/', ctrl: true, description: 'Focus search', handler: () => {
+      // Focus search input (would need ref to implement)
+      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement
+      searchInput?.focus()
+    }},
+    { key: 't', description: 'Toggle theme', handler: () => {
+      setTheme(theme === 'dark' ? 'light' : 'dark')
+    }},
+    { key: 'n', description: 'New task', handler: () => setIsAddingTask(true) },
+    
+    // Filter shortcuts
+    { key: '1', description: 'Show all tasks', handler: () => handleFiltersChange({ ...filters, status: undefined }) },
+    { key: '2', description: 'Show active tasks', handler: () => handleFiltersChange({ ...filters, status: 'PENDING' }) },
+    { key: '3', description: 'Show completed tasks', handler: () => handleFiltersChange({ ...filters, status: 'COMPLETED' }) },
+    { key: '1', ctrl: true, description: 'Filter high priority', handler: () => handleFiltersChange({ ...filters, priority: 'HIGH' }) },
+    { key: '2', ctrl: true, description: 'Filter medium priority', handler: () => handleFiltersChange({ ...filters, priority: 'MEDIUM' }) },
+    { key: '3', ctrl: true, description: 'Filter low priority', handler: () => handleFiltersChange({ ...filters, priority: 'LOW' }) },
+  ]
+
+  useKeyboardNavigation({
+    shortcuts,
+    enabled: !isAddingTask && !editingTask // Disable when dialogs are open
+  })
+
   // Handle loading and error states
   if (error) {
     return (
@@ -206,6 +242,19 @@ function TaskManagerApiContent() {
 
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 max-w-full sm:max-w-6xl">
+      {/* Keyboard shortcuts button */}
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowShortcuts(true)}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <Keyboard className="h-4 w-4 mr-2" />
+          Keyboard Shortcuts
+        </Button>
+      </div>
+      
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6">
         {/* Sidebar with filters and add button */}
         <div className="w-full md:w-80 lg:w-96 space-y-3 sm:space-y-4">
@@ -311,6 +360,12 @@ function TaskManagerApiContent() {
           }}
         />
       )}
+
+      {/* Keyboard Shortcuts Dialog */}
+      <KeyboardShortcutsDialog
+        open={showShortcuts}
+        onOpenChange={setShowShortcuts}
+      />
     </div>
   )
 }

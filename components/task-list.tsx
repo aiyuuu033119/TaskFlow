@@ -4,7 +4,7 @@ import type { Task, TaskStatus } from '@/types'
 import { TaskCard } from './task-card'
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger } from './ui/select'
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
   CheckSquare,
   Square,
@@ -17,6 +17,8 @@ import {
   XCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useFocusManagement } from '@/hooks/use-focus-management'
+import { useKeyboardNavigation } from '@/hooks/use-keyboard-navigation'
 
 interface TaskListProps {
   tasks: Task[]
@@ -49,10 +51,8 @@ export function TaskList({
 }: TaskListProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
-  if (tasks.length === 0) {
-    return emptyComponent || null
-  }
 
+  // Handle task selection
   const handleSelectTask = (taskId: string, selected: boolean) => {
     if (!onSelectionChange) return
 
@@ -71,6 +71,86 @@ export function TaskList({
     } else {
       onSelectionChange([])
     }
+  }
+
+  // Focus management for keyboard navigation
+  const {
+    focusedIndex,
+    setFocusedIndex,
+    navigate,
+    selectFocused,
+    setItemRef,
+    focusFirst,
+    focusLast,
+    focusNext,
+    focusPrevious,
+    isFocused
+  } = useFocusManagement({
+    items: tasks,
+    onItemSelect: (task) => onEdit?.(task),
+    wrap: true
+  })
+
+  // Handle task selection with keyboard
+  const handleKeyboardSelect = useCallback((task: Task) => {
+    if (showCheckboxes) {
+      const isSelected = selectedTaskIds.includes(task.id)
+      handleSelectTask(task.id, !isSelected)
+    } else {
+      onEdit?.(task)
+    }
+  }, [showCheckboxes, selectedTaskIds, onEdit])
+
+  // Delete focused task
+  const deleteFocusedTask = useCallback(() => {
+    if (focusedIndex >= 0 && focusedIndex < tasks.length) {
+      const task = tasks[focusedIndex]
+      onDelete?.(task.id)
+    }
+  }, [focusedIndex, tasks, onDelete])
+
+  // Toggle focused task status
+  const toggleFocusedTaskStatus = useCallback(() => {
+    if (focusedIndex >= 0 && focusedIndex < tasks.length) {
+      const task = tasks[focusedIndex]
+      const newStatus = task.status === 'completed' ? 'pending' : 'completed'
+      onStatusChange?.(task.id, newStatus)
+    }
+  }, [focusedIndex, tasks, onStatusChange])
+
+  // Keyboard shortcuts
+  const shortcuts = [
+    // Navigation
+    { key: 'j', description: 'Move down', handler: focusNext },
+    { key: 'k', description: 'Move up', handler: focusPrevious },
+    { key: 'g', shift: true, description: 'Go to last', handler: focusLast },
+    { key: 'g', description: 'Go to first', handler: focusFirst },
+    
+    // Actions
+    { key: 'Enter', description: 'Edit task', handler: () => selectFocused() },
+    { key: ' ', description: 'Toggle selection/status', handler: () => {
+      if (focusedIndex >= 0 && focusedIndex < tasks.length) {
+        handleKeyboardSelect(tasks[focusedIndex])
+      }
+    }},
+    { key: 'Delete', description: 'Delete task', handler: deleteFocusedTask },
+    { key: 'd', description: 'Delete task', handler: deleteFocusedTask },
+    { key: 'x', description: 'Toggle task completion', handler: toggleFocusedTaskStatus },
+    
+    // Selection
+    { key: 'a', ctrl: true, description: 'Select all', handler: () => handleSelectAll(true) },
+    { key: 'Escape', description: 'Clear selection', handler: () => onSelectionChange?.([]) },
+  ]
+
+  useKeyboardNavigation({
+    shortcuts,
+    onNavigate: navigate,
+    onSelect: selectFocused,
+    enabled: true
+  })
+
+  if (tasks.length === 0) {
+    return emptyComponent || null
   }
 
   const isAllSelected = tasks.length > 0 && selectedTaskIds.length === tasks.length
@@ -261,20 +341,31 @@ export function TaskList({
         </div>
       )}
       <div className="space-y-2 sm:space-y-3">
-        {tasks.map((task) => (
-          <TaskCard
+        {tasks.map((task, index) => (
+          <div
             key={task.id}
-            task={task}
-            onStatusChange={onStatusChange}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            isLoading={loadingStates[task.id] || false}
-            isSelected={selectedTaskIds.includes(task.id)}
-            onSelectChange={
-              showCheckboxes ? (selected) => handleSelectTask(task.id, selected) : undefined
-            }
-            showCheckbox={showCheckboxes}
-          />
+            ref={setItemRef(index)}
+            tabIndex={isFocused(index) ? 0 : -1}
+            className={cn(
+              "outline-none rounded-lg transition-all duration-200",
+              isFocused(index) && "ring-2 ring-primary ring-offset-2"
+            )}
+            onFocus={() => setFocusedIndex(index)}
+          >
+            <TaskCard
+              task={task}
+              onStatusChange={onStatusChange}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              isLoading={loadingStates[task.id] || false}
+              isSelected={selectedTaskIds.includes(task.id)}
+              onSelectChange={
+                showCheckboxes ? (selected) => handleSelectTask(task.id, selected) : undefined
+              }
+              showCheckbox={showCheckboxes}
+              isFocused={isFocused(index)}
+            />
+          </div>
         ))}
       </div>
     </div>
