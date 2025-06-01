@@ -196,28 +196,64 @@ function TaskManagerApiContent() {
     // Global shortcuts
     { key: 'k', ctrl: true, description: 'Quick add task', handler: () => setIsAddingTask(true) },
     { key: '?', description: 'Show shortcuts help', handler: () => setShowShortcuts(true) },
-    { key: '/', ctrl: true, description: 'Focus search', handler: () => {
-      // Focus search input (would need ref to implement)
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement
-      searchInput?.focus()
-    }},
-    { key: 't', description: 'Toggle theme', handler: () => {
-      setTheme(theme === 'dark' ? 'light' : 'dark')
-    }},
+    {
+      key: '/',
+      ctrl: true,
+      description: 'Focus search',
+      handler: () => {
+        // Focus search input (would need ref to implement)
+        const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement
+        searchInput?.focus()
+      },
+    },
+    {
+      key: 't',
+      description: 'Toggle theme',
+      handler: () => {
+        setTheme(theme === 'dark' ? 'light' : 'dark')
+      },
+    },
     { key: 'n', description: 'New task', handler: () => setIsAddingTask(true) },
-    
+
     // Filter shortcuts
-    { key: '1', description: 'Show all tasks', handler: () => handleFiltersChange({ ...filters, status: undefined }) },
-    { key: '2', description: 'Show active tasks', handler: () => handleFiltersChange({ ...filters, status: 'PENDING' }) },
-    { key: '3', description: 'Show completed tasks', handler: () => handleFiltersChange({ ...filters, status: 'COMPLETED' }) },
-    { key: '1', ctrl: true, description: 'Filter high priority', handler: () => handleFiltersChange({ ...filters, priority: 'HIGH' }) },
-    { key: '2', ctrl: true, description: 'Filter medium priority', handler: () => handleFiltersChange({ ...filters, priority: 'MEDIUM' }) },
-    { key: '3', ctrl: true, description: 'Filter low priority', handler: () => handleFiltersChange({ ...filters, priority: 'LOW' }) },
+    {
+      key: '1',
+      description: 'Show all tasks',
+      handler: () => handleFiltersChange({ ...filters, status: undefined }),
+    },
+    {
+      key: '2',
+      description: 'Show active tasks',
+      handler: () => handleFiltersChange({ ...filters, status: 'PENDING' }),
+    },
+    {
+      key: '3',
+      description: 'Show completed tasks',
+      handler: () => handleFiltersChange({ ...filters, status: 'COMPLETED' }),
+    },
+    {
+      key: '1',
+      ctrl: true,
+      description: 'Filter high priority',
+      handler: () => handleFiltersChange({ ...filters, priority: 'HIGH' }),
+    },
+    {
+      key: '2',
+      ctrl: true,
+      description: 'Filter medium priority',
+      handler: () => handleFiltersChange({ ...filters, priority: 'MEDIUM' }),
+    },
+    {
+      key: '3',
+      ctrl: true,
+      description: 'Filter low priority',
+      handler: () => handleFiltersChange({ ...filters, priority: 'LOW' }),
+    },
   ]
 
   useKeyboardNavigation({
     shortcuts,
-    enabled: !isAddingTask && !editingTask // Disable when dialogs are open
+    enabled: !isAddingTask && !editingTask, // Disable when dialogs are open
   })
 
   // Handle loading and error states
@@ -254,7 +290,7 @@ function TaskManagerApiContent() {
           Keyboard Shortcuts
         </Button>
       </div>
-      
+
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6">
         {/* Sidebar with filters and add button */}
         <div className="w-full md:w-80 lg:w-96 space-y-3 sm:space-y-4">
@@ -362,10 +398,7 @@ function TaskManagerApiContent() {
       )}
 
       {/* Keyboard Shortcuts Dialog */}
-      <KeyboardShortcutsDialog
-        open={showShortcuts}
-        onOpenChange={setShowShortcuts}
-      />
+      <KeyboardShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
     </div>
   )
 }

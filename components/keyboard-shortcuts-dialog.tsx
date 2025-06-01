@@ -26,7 +26,7 @@ const shortcuts: KeyboardShortcut[] = [
   { keys: ['?'], description: 'Show keyboard shortcuts', category: 'Global' },
   { keys: ['Ctrl', '/'], description: 'Focus search', category: 'Global' },
   { keys: ['T'], description: 'Toggle theme', category: 'Global' },
-  
+
   // Navigation
   { keys: ['↑', '↓'], description: 'Navigate tasks', category: 'Navigation' },
   { keys: ['J', 'K'], description: 'Navigate tasks (Vim style)', category: 'Navigation' },
@@ -34,7 +34,7 @@ const shortcuts: KeyboardShortcut[] = [
   { keys: ['End'], description: 'Go to last task', category: 'Navigation' },
   { keys: ['Tab'], description: 'Focus next element', category: 'Navigation' },
   { keys: ['Shift', 'Tab'], description: 'Focus previous element', category: 'Navigation' },
-  
+
   // Task actions
   { keys: ['Enter'], description: 'Open/Edit selected task', category: 'Task Actions' },
   { keys: ['Space'], description: 'Toggle task completion', category: 'Task Actions' },
@@ -43,7 +43,7 @@ const shortcuts: KeyboardShortcut[] = [
   { keys: ['E'], description: 'Edit selected task', category: 'Task Actions' },
   { keys: ['N'], description: 'Create new task', category: 'Task Actions' },
   { keys: ['Ctrl', 'D'], description: 'Duplicate task', category: 'Task Actions' },
-  
+
   // Filters
   { keys: ['1'], description: 'Show all tasks', category: 'Filters' },
   { keys: ['2'], description: 'Show active tasks', category: 'Filters' },
@@ -51,25 +51,25 @@ const shortcuts: KeyboardShortcut[] = [
   { keys: ['Ctrl', '1'], description: 'Filter by high priority', category: 'Filters' },
   { keys: ['Ctrl', '2'], description: 'Filter by medium priority', category: 'Filters' },
   { keys: ['Ctrl', '3'], description: 'Filter by low priority', category: 'Filters' },
-  
+
   // Dialog/Modal
   { keys: ['Escape'], description: 'Close dialog/Cancel', category: 'Dialog' },
   { keys: ['Ctrl', 'Enter'], description: 'Save and close', category: 'Dialog' },
 ]
 
-export function KeyboardShortcutsDialog({
-  open,
-  onOpenChange,
-}: KeyboardShortcutsDialogProps) {
+export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcutsDialogProps) {
   // Group shortcuts by category
-  const groupedShortcuts = shortcuts.reduce((acc, shortcut) => {
-    const category = shortcut.category || 'Other'
-    if (!acc[category]) {
-      acc[category] = []
-    }
-    acc[category].push(shortcut)
-    return acc
-  }, {} as Record<string, KeyboardShortcut[]>)
+  const groupedShortcuts = shortcuts.reduce(
+    (acc, shortcut) => {
+      const category = shortcut.category || 'Other'
+      if (!acc[category]) {
+        acc[category] = []
+      }
+      acc[category].push(shortcut)
+      return acc
+    },
+    {} as Record<string, KeyboardShortcut[]>,
+  )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,13 +83,11 @@ export function KeyboardShortcutsDialog({
             Use these keyboard shortcuts to navigate and manage tasks more efficiently.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 mt-6">
           {Object.entries(groupedShortcuts).map(([category, categoryShortcuts]) => (
             <div key={category}>
-              <h3 className="font-semibold text-sm text-muted-foreground mb-3">
-                {category}
-              </h3>
+              <h3 className="font-semibold text-sm text-muted-foreground mb-3">{category}</h3>
               <div className="space-y-2">
                 {categoryShortcuts.map((shortcut, index) => (
                   <div
@@ -113,10 +111,14 @@ export function KeyboardShortcutsDialog({
             </div>
           ))}
         </div>
-        
+
         <div className="mt-6 pt-6 border-t">
           <p className="text-sm text-muted-foreground text-center">
-            Press <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">?</kbd> at any time to show this help
+            Press{' '}
+            <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">
+              ?
+            </kbd>{' '}
+            at any time to show this help
           </p>
         </div>
       </DialogContent>

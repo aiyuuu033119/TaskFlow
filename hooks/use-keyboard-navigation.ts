@@ -23,7 +23,7 @@ export function useKeyboardNavigation({
   onNavigate,
   onSelect,
   onCancel,
-  enabled = true
+  enabled = true,
 }: UseKeyboardNavigationOptions = {}) {
   const shortcutsRef = useRef<KeyboardShortcut[]>(shortcuts)
 
@@ -32,70 +32,75 @@ export function useKeyboardNavigation({
     shortcutsRef.current = shortcuts
   }, [shortcuts])
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!enabled) return
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!enabled) return
 
-    const { key, ctrlKey, altKey, shiftKey, metaKey } = event
+      const { key, ctrlKey, altKey, shiftKey, metaKey } = event
 
-    // Check for matching shortcuts
-    const matchingShortcut = shortcutsRef.current.find(shortcut => {
-      const keyMatch = shortcut.key.toLowerCase() === key.toLowerCase()
-      const ctrlMatch = (shortcut.ctrl || false) === ctrlKey
-      const altMatch = (shortcut.alt || false) === altKey
-      const shiftMatch = (shortcut.shift || false) === shiftKey
-      const metaMatch = (shortcut.meta || false) === metaKey
+      // Check for matching shortcuts
+      const matchingShortcut = shortcutsRef.current.find((shortcut) => {
+        const keyMatch = shortcut.key.toLowerCase() === key.toLowerCase()
+        const ctrlMatch = (shortcut.ctrl || false) === ctrlKey
+        const altMatch = (shortcut.alt || false) === altKey
+        const shiftMatch = (shortcut.shift || false) === shiftKey
+        const metaMatch = (shortcut.meta || false) === metaKey
 
-      return keyMatch && ctrlMatch && altMatch && shiftMatch && metaMatch
-    })
+        return keyMatch && ctrlMatch && altMatch && shiftMatch && metaMatch
+      })
 
-    if (matchingShortcut) {
-      event.preventDefault()
-      matchingShortcut.handler()
-      return
-    }
+      if (matchingShortcut) {
+        event.preventDefault()
+        matchingShortcut.handler()
+        return
+      }
 
-    // Handle navigation keys
-    switch (key) {
-      case 'ArrowUp':
-        if (onNavigate) {
-          event.preventDefault()
-          onNavigate('up')
-        }
-        break
-      case 'ArrowDown':
-        if (onNavigate) {
-          event.preventDefault()
-          onNavigate('down')
-        }
-        break
-      case 'ArrowLeft':
-        if (onNavigate) {
-          event.preventDefault()
-          onNavigate('left')
-        }
-        break
-      case 'ArrowRight':
-        if (onNavigate) {
-          event.preventDefault()
-          onNavigate('right')
-        }
-        break
-      case 'Enter':
-        if (onSelect && !event.target || 
-            (event.target instanceof HTMLElement && 
-             !['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))) {
-          event.preventDefault()
-          onSelect()
-        }
-        break
-      case 'Escape':
-        if (onCancel) {
-          event.preventDefault()
-          onCancel()
-        }
-        break
-    }
-  }, [enabled, onNavigate, onSelect, onCancel])
+      // Handle navigation keys
+      switch (key) {
+        case 'ArrowUp':
+          if (onNavigate) {
+            event.preventDefault()
+            onNavigate('up')
+          }
+          break
+        case 'ArrowDown':
+          if (onNavigate) {
+            event.preventDefault()
+            onNavigate('down')
+          }
+          break
+        case 'ArrowLeft':
+          if (onNavigate) {
+            event.preventDefault()
+            onNavigate('left')
+          }
+          break
+        case 'ArrowRight':
+          if (onNavigate) {
+            event.preventDefault()
+            onNavigate('right')
+          }
+          break
+        case 'Enter':
+          if (
+            (onSelect && !event.target) ||
+            (event.target instanceof HTMLElement &&
+              !['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))
+          ) {
+            event.preventDefault()
+            onSelect()
+          }
+          break
+        case 'Escape':
+          if (onCancel) {
+            event.preventDefault()
+            onCancel()
+          }
+          break
+      }
+    },
+    [enabled, onNavigate, onSelect, onCancel],
+  )
 
   useEffect(() => {
     if (!enabled) return
@@ -105,7 +110,7 @@ export function useKeyboardNavigation({
   }, [enabled, handleKeyDown])
 
   return {
-    shortcuts: shortcutsRef.current
+    shortcuts: shortcutsRef.current,
   }
 }
 

@@ -84,22 +84,25 @@ export function TaskList({
     focusLast,
     focusNext,
     focusPrevious,
-    isFocused
+    isFocused,
   } = useFocusManagement({
     items: tasks,
     onItemSelect: (task) => onEdit?.(task),
-    wrap: true
+    wrap: true,
   })
 
   // Handle task selection with keyboard
-  const handleKeyboardSelect = useCallback((task: Task) => {
-    if (showCheckboxes) {
-      const isSelected = selectedTaskIds.includes(task.id)
-      handleSelectTask(task.id, !isSelected)
-    } else {
-      onEdit?.(task)
-    }
-  }, [showCheckboxes, selectedTaskIds, onEdit])
+  const handleKeyboardSelect = useCallback(
+    (task: Task) => {
+      if (showCheckboxes) {
+        const isSelected = selectedTaskIds.includes(task.id)
+        handleSelectTask(task.id, !isSelected)
+      } else {
+        onEdit?.(task)
+      }
+    },
+    [showCheckboxes, selectedTaskIds, onEdit],
+  )
 
   // Delete focused task
   const deleteFocusedTask = useCallback(() => {
@@ -125,18 +128,22 @@ export function TaskList({
     { key: 'k', description: 'Move up', handler: focusPrevious },
     { key: 'g', shift: true, description: 'Go to last', handler: focusLast },
     { key: 'g', description: 'Go to first', handler: focusFirst },
-    
+
     // Actions
     { key: 'Enter', description: 'Edit task', handler: () => selectFocused() },
-    { key: ' ', description: 'Toggle selection/status', handler: () => {
-      if (focusedIndex >= 0 && focusedIndex < tasks.length) {
-        handleKeyboardSelect(tasks[focusedIndex])
-      }
-    }},
+    {
+      key: ' ',
+      description: 'Toggle selection/status',
+      handler: () => {
+        if (focusedIndex >= 0 && focusedIndex < tasks.length) {
+          handleKeyboardSelect(tasks[focusedIndex])
+        }
+      },
+    },
     { key: 'Delete', description: 'Delete task', handler: deleteFocusedTask },
     { key: 'd', description: 'Delete task', handler: deleteFocusedTask },
     { key: 'x', description: 'Toggle task completion', handler: toggleFocusedTaskStatus },
-    
+
     // Selection
     { key: 'a', ctrl: true, description: 'Select all', handler: () => handleSelectAll(true) },
     { key: 'Escape', description: 'Clear selection', handler: () => onSelectionChange?.([]) },
@@ -146,7 +153,7 @@ export function TaskList({
     shortcuts,
     onNavigate: navigate,
     onSelect: selectFocused,
-    enabled: true
+    enabled: true,
   })
 
   if (tasks.length === 0) {
@@ -347,8 +354,8 @@ export function TaskList({
             ref={setItemRef(index)}
             tabIndex={isFocused(index) ? 0 : -1}
             className={cn(
-              "outline-none rounded-lg transition-all duration-200",
-              isFocused(index) && "ring-2 ring-primary ring-offset-2"
+              'outline-none rounded-lg transition-all duration-200',
+              isFocused(index) && 'ring-2 ring-primary ring-offset-2',
             )}
             onFocus={() => setFocusedIndex(index)}
           >
