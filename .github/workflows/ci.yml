@@ -37,11 +37,36 @@ jobs:
       - name: Check Prettier formatting
         run: npx prettier --check "**/*.{js,jsx,ts,tsx,json,css,md}"
 
-  # Job 2: Build
+  # Job 2: Security Audit
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run security checks
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  # Job 3: Build
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: lint-and-typecheck
+    needs: security
     
     steps:
       - name: Checkout code
@@ -74,11 +99,11 @@ jobs:
           path: .next
           retention-days: 7
 
-  # Job 3: Unit Tests
+  # Job 4: Unit Tests
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: lint-and-typecheck
+    needs: build
     
     steps:
       - name: Checkout code
@@ -113,7 +138,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
 
-  # Job 4: E2E Tests
+  # Job 5: E2E Tests
   # e2e-tests:
   #   name: E2E Tests
   #   runs-on: ubuntu-latest
@@ -156,30 +181,6 @@ jobs:
   #         name: playwright-report
   #         path: playwright-report/
   #         retention-days: 30
-
-  # Job 5: Security Audit
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Run npm audit
-        run: npm audit --audit-level=high
-        continue-on-error: true
-
-      - name: Run security checks
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   # Job 6: Lighthouse CI
   # lighthouse:
@@ -241,7 +242,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build, unit-tests, security]
+    needs: [unit-tests]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
