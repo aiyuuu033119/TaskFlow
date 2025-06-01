@@ -57,7 +57,8 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DATABASE_URL=file:./dev.db" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'file:./dev.db' }}" >> .env
+          echo "DIRECT_URL=${{ secrets.DIRECT_URL || 'file:./dev.db' }}" >> .env
           echo "NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}" >> .env
 
       - name: Generate Prisma Client
