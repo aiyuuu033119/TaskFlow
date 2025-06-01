@@ -14,49 +14,23 @@ The pipeline includes automated testing, code quality checks with lint-staged, s
 Runs on every push and pull request to main/develop branches.
 
 **Jobs:**
-- **Lint and Type Check**: ESLint, TypeScript, and Prettier checks
-- **Build**: Builds the Next.js application
-- **Unit Tests**: Runs Vitest tests with coverage
-- **E2E Tests**: Runs Playwright tests
-- **Security Audit**: npm audit and Snyk scanning
-- **Lighthouse**: Performance testing
-- **Deploy Preview**: Deploys PR previews to Vercel
-- **Release**: Automated semantic versioning and releases
+- **Lint and Type Check**: ESLint, TypeScript, and Prettier formatting checks
+- **Build**: Builds the Next.js application with Prisma client generation
+- **Unit Tests**: Runs Vitest tests with coverage reporting to Codecov
+- **Dependabot**: Auto-approves and merges dependency update PRs
 
-### 2. Deploy to Production (`deploy.yml`)
-Runs on push to main branch.
-
-**Jobs:**
-- **Deploy**: Deploys to Vercel production
-- **Production Tests**: Runs E2E tests against production
-
-### 3. Code Quality (`code-quality.yml`)
-Runs on pull requests.
-
-**Jobs:**
-- Circular dependency checks
-- Bundle size analysis
-- SonarCloud code quality scan
-- Automated PR comments with metrics
-
-### 4. Dependabot Auto-Merge (`dependabot.yml`)
-Automatically merges Dependabot PRs that pass tests.
 
 ## Required Secrets
 
 Configure these in GitHub Settings → Secrets → Actions:
 
 ### Essential
-- `VERCEL_TOKEN`: Your Vercel authentication token
-- `VERCEL_ORG_ID`: Your Vercel organization ID
-- `VERCEL_PROJECT_ID`: Your Vercel project ID
+- `CODECOV_TOKEN`: For test coverage reporting
+- `DATABASE_URL`: Production database connection string (optional, defaults to file:./dev.db)
+- `NEXT_PUBLIC_APP_URL`: Application URL (optional, defaults to http://localhost:3000)
 
 ### Optional
-- `CODECOV_TOKEN`: For coverage reports
-- `SNYK_TOKEN`: For security scanning
-- `SONAR_TOKEN`: For code quality analysis
-- `SLACK_WEBHOOK_URL`: For deployment notifications
-- `NEXT_PUBLIC_APP_URL`: Production app URL
+- `SNYK_TOKEN`: For security scanning (if using Snyk)
 
 ## Setting Up
 

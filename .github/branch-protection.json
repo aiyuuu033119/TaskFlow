@@ -2,12 +2,7 @@
   "protection": {
     "required_status_checks": {
       "strict": true,
-      "contexts": [
-        "🚀 Fast Checks",
-        "🔒 Security & Quality",
-        "🏗️ Build & Test",
-        "📦 Bundle Analysis"
-      ]
+      "contexts": ["Lint and Type Check", "Build Application", "Unit Tests"]
     },
     "enforce_admins": false,
     "required_pull_request_reviews": {

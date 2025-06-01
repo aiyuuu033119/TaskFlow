@@ -6,86 +6,76 @@ This project implements a comprehensive CI/CD pipeline following industry best p
 
 ## Pipeline Architecture
 
-### 🚀 **Stage 1: Fast Feedback (< 5 minutes)**
-- **Purpose**: Provide immediate feedback to developers
+### 🔍 **Stage 1: Lint and Type Check (< 3 minutes)**
+- **Purpose**: Fast code quality validation
 - **Jobs**: 
-  - Lint-staged quality checks
+  - ESLint code linting
   - TypeScript type checking
-  - Dependency vulnerability audit
+  - Prettier formatting validation
 - **Triggers**: Every push and pull request
 
-### 🔒 **Stage 2: Security & Quality (5-10 minutes)**
-- **Purpose**: Advanced security scanning and code analysis
+### 🏗️ **Stage 2: Build Application (3-5 minutes)**
+- **Purpose**: Verify application builds successfully
 - **Jobs**:
-  - Snyk security scanning
-  - CodeQL analysis for security vulnerabilities
-- **Triggers**: All branches
+  - Install dependencies
+  - Generate Prisma client
+  - Build Next.js application
+  - Upload build artifacts
+- **Triggers**: All branches (needs lint-and-typecheck to pass)
 
-### 🏗️ **Stage 3: Build & Test (10-15 minutes)**
-- **Purpose**: Verify application builds and passes tests
+### 🧪 **Stage 3: Unit Tests (5-8 minutes)**
+- **Purpose**: Run test suite with coverage reporting
 - **Jobs**:
-  - Multi-node build testing (Node 18.x, 20.x)
-  - Unit test execution with coverage
-  - Build artifact generation
-- **Triggers**: All branches
+  - Execute Vitest test suite
+  - Generate coverage reports
+  - Upload coverage to Codecov
+- **Triggers**: All branches (needs build to pass)
 
-### 📦 **Stage 4: Bundle Analysis**
-- **Purpose**: Monitor bundle size and performance
+### 🤖 **Stage 4: Dependabot Auto-merge**
+- **Purpose**: Automatically handle dependency updates
 - **Jobs**:
-  - Bundle size analysis
-  - Performance regression detection
-- **Triggers**: Pull requests only
-
-### 🚀 **Stage 5: Deployment**
-- **Purpose**: Automated deployment to environments
-- **Jobs**:
-  - Staging deployment (develop branch)
-  - Production deployment (main branch)
-  - Health checks and verification
-- **Triggers**: Push to main/develop branches
+  - Auto-approve Dependabot PRs
+  - Auto-merge after tests pass
+- **Triggers**: PRs from dependabot[bot]
 
 ## Key Features
 
-### ✅ **Code Quality with lint-staged**
-- **ESLint** with TypeScript rules
-- **Prettier** for consistent formatting
-- **Automatic fixing** where possible
-- Runs only on changed files for speed
+### ✅ **Code Quality Enforcement**
+- **ESLint** with TypeScript rules and auto-fixing
+- **Prettier** for consistent code formatting
+- **TypeScript** type checking for type safety
+- Sequential job execution for fast feedback
 
-### 🛡️ **Security First**
-- **Dependency auditing** with npm audit
-- **Advanced security scanning** with Snyk
-- **CodeQL analysis** for vulnerability detection
-- **Branch protection** rules enforcement
+### 🏗️ **Reliable Build Process**
+- **Prisma client generation** for database access
+- **Next.js optimization** for production builds
+- **Build artifact preservation** for deployment
+- **Environment configuration** support
 
-### 🔄 **Efficient Caching**
-- **Node modules caching** for faster builds
-- **Build artifact sharing** between jobs
-- **Dependency restoration** optimization
+### 🧪 **Comprehensive Testing**
+- **Vitest test suite** execution
+- **Code coverage reporting** with Codecov integration
+- **Pass-with-no-tests** for early development
+- **Test environment isolation**
 
-### 📊 **Quality Gates**
-- **Required status checks** before merge
-- **Code review requirements**
-- **Automatic PR comments** with results
-- **Build artifact retention**
+### 🤖 **Automated Dependency Management**
+- **Dependabot integration** for security updates
+- **Automatic PR approval** for trusted updates
+- **Auto-merge** after CI validation
+- **Reduced maintenance overhead**
 
 ## Pipeline Configuration Files
 
-### Main Pipeline: `.github/workflows/ci-cd.yml`
-- Complete CI/CD workflow
-- Multi-stage execution
-- Parallel job processing
-- Environment-specific deployments
-
-### Quality Gates: `.github/workflows/quality-gates.yml`
-- Additional quality checks for PRs
-- Coverage thresholds enforcement
-- Security audit gates
+### Main Pipeline: `.github/workflows/ci.yml`
+- Sequential job execution: lint → build → test
+- Dependabot automation
+- Codecov integration
+- Build artifact management
 
 ### Branch Protection: `.github/branch-protection.json`
-- Required status checks configuration
+- Required status checks for all three jobs
 - Code review requirements
-- Merge restrictions
+- Merge restrictions and conversation resolution
 
 ## Setup Instructions
 
@@ -93,14 +83,12 @@ This project implements a comprehensive CI/CD pipeline following industry best p
 Configure these secrets in GitHub Settings → Secrets → Actions:
 
 ```bash
-# Security Scanning
-SNYK_TOKEN=your_snyk_token_here
-
-# Code Coverage  
+# Required
 CODECOV_TOKEN=your_codecov_token_here
 
-# Deployment (if needed)
-DEPLOY_KEY=your_deployment_key_here
+# Optional (have defaults)
+DATABASE_URL=file:./dev.db  # Default
+NEXT_PUBLIC_APP_URL=http://localhost:3000  # Default
 ```
 
 ### 2. **Branch Protection Rules**
@@ -116,10 +104,9 @@ Enable branch protection for `main` and `develop`:
    - ✅ Require conversation resolution
 
 Required status checks:
-- `🚀 Fast Checks`
-- `🔒 Security & Quality`
-- `🏗️ Build & Test`
-- `📦 Bundle Analysis`
+- `Lint and Type Check`
+- `Build Application`
+- `Unit Tests`
 
 ### 3. **Local Development Setup**
 
