@@ -2,7 +2,11 @@
 
 ## Overview
 
-This repository uses GitHub Actions for continuous integration and deployment. The pipeline includes automated testing, code quality checks, security scanning, and deployment to Vercel.
+This repository uses GitHub Actions for continuous integration and deployment. The pipeline follows best practices with fast feedback, comprehensive quality checks, and automated deployment.
+
+> 📖 **For detailed CI/CD guide, see [CI_CD_GUIDE.md](../../docs/CI_CD_GUIDE.md)**
+
+The pipeline includes automated testing, code quality checks with lint-staged, security scanning, and deployment workflows.
 
 ## Workflows
 
