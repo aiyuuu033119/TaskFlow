@@ -16,15 +16,6 @@
       "maxDuration": 15
     }
   },
-  "env": {
-    "DATABASE_URL": "@DATABASE_URL",
-    "NEXT_PUBLIC_APP_URL": "@next_public_app_url"
-  },
-  "build": {
-    "env": {
-      "DATABASE_URL": "@DATABASE_URL"
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
