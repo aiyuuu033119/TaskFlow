@@ -8,15 +8,15 @@ async function testBasicSanitization() {
     console.log('1. Testing XSS protection in task creation...')
     const createResponse = await fetch(`${API_BASE_URL}/tasks`, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Origin': 'http://localhost:3000'
+        Origin: 'http://localhost:3000',
       },
       body: JSON.stringify({
         title: '<script>alert("xss")</script>Clean Title',
         description: '<img src="x" onerror="alert(1)">Safe description',
-        priority: 'HIGH'
-      })
+        priority: 'HIGH',
+      }),
     })
 
     if (createResponse.status === 201) {
@@ -24,7 +24,7 @@ async function testBasicSanitization() {
       console.log('✅ Task created successfully')
       console.log(`   Title: ${task.title}`)
       console.log(`   Description: ${task.description}`)
-      
+
       // Check if dangerous content was removed
       if (!task.title.includes('<script>') && !task.description.includes('onerror')) {
         console.log('✅ XSS content was properly sanitized')
@@ -34,8 +34,10 @@ async function testBasicSanitization() {
 
       // Test 2: Test search with dangerous input
       console.log('\n2. Testing search parameter sanitization...')
-      const searchResponse = await fetch(`${API_BASE_URL}/tasks?search=${encodeURIComponent('<script>alert("search")</script>')}`)
-      
+      const searchResponse = await fetch(
+        `${API_BASE_URL}/tasks?search=${encodeURIComponent('<script>alert("search")</script>')}`,
+      )
+
       if (searchResponse.status === 200) {
         console.log('✅ Search handled dangerous input safely')
       } else {
@@ -46,14 +48,14 @@ async function testBasicSanitization() {
       console.log('\n3. Testing input length validation...')
       const longTitleResponse = await fetch(`${API_BASE_URL}/tasks`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Origin': 'http://localhost:3000'
+          Origin: 'http://localhost:3000',
         },
         body: JSON.stringify({
           title: 'A'.repeat(300), // Too long
-          description: 'Valid description'
-        })
+          description: 'Valid description',
+        }),
       })
 
       if (longTitleResponse.status === 400) {
@@ -67,14 +69,13 @@ async function testBasicSanitization() {
       const deleteResponse = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
         method: 'DELETE',
         headers: {
-          'Origin': 'http://localhost:3000'
-        }
+          Origin: 'http://localhost:3000',
+        },
       })
-      
+
       if (deleteResponse.status === 200) {
         console.log('✅ Test task cleaned up')
       }
-      
     } else {
       console.log(`❌ Failed to create task: ${createResponse.status}`)
       const error = await createResponse.json()
@@ -82,7 +83,6 @@ async function testBasicSanitization() {
     }
 
     console.log('\n✅ Basic sanitization tests completed!')
-
   } catch (error) {
     console.error('❌ Test failed:', error.message)
   }

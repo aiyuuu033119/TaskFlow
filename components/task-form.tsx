@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { UnsavedChangesConfirmation } from '@/components/ui/confirmation-dialog'
 import { type Task, type CreateTaskData, type UpdateTaskData, type TaskPriority } from '@/types'
 import { useAsync } from '@/hooks/use-async'
 import { CalendarDays, X } from 'lucide-react'
@@ -62,11 +61,6 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
       // Error handling is done in parent component
       console.error('Form submission failed:', error)
     }
-  }
-
-  const formatDateForInput = (date: string) => {
-    if (!date) return ''
-    return new Date(date).toISOString().split('T')[0]
   }
 
   return (

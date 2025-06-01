@@ -33,19 +33,20 @@ export function useEmptyState({
       return {
         variant: 'new-user',
         title: isFirstTime ? 'Welcome to TaskFlow!' : 'No tasks yet',
-        description: isFirstTime 
+        description: isFirstTime
           ? 'Start organizing your work by creating your first task. Stay productive and never miss a deadline.'
           : 'Create your first task to get started with TaskFlow.',
       }
     }
 
     // All tasks are completed
-    const allCompleted = tasks.every(task => task.status === 'COMPLETED')
+    const allCompleted = tasks.every((task) => task.status === 'COMPLETED')
     if (allCompleted) {
       return {
         variant: 'all-completed',
         title: 'All tasks completed! 🎉',
-        description: 'Congratulations! You\'ve finished everything on your list. Time for new challenges or a well-deserved break.',
+        description:
+          "Congratulations! You've finished everything on your list. Time for new challenges or a well-deserved break.",
       }
     }
 
@@ -62,11 +63,11 @@ export function useEmptyState({
     // Filtered results (status, priority, or combination)
     const hasStatusFilter = filters.status && filters.status.length > 0
     const hasPriorityFilter = filters.priority && filters.priority.length > 0
-    
+
     if (hasStatusFilter || hasPriorityFilter) {
       let title = 'No matching tasks'
       let description = 'No tasks match your current filter settings.'
-      
+
       if (hasStatusFilter && hasPriorityFilter) {
         description = `No tasks found with the selected status and priority filters.`
       } else if (hasStatusFilter) {
@@ -76,7 +77,7 @@ export function useEmptyState({
         const priorityText = filters.priority!.join(', ').toLowerCase()
         description = `No tasks found with priority: ${priorityText}.`
       }
-      
+
       return {
         variant: 'filtered',
         title,
@@ -98,7 +99,7 @@ export function useIsFirstTimeUser(): boolean {
   return useMemo(() => {
     // Simple check - could be enhanced with actual user tracking
     if (typeof window === 'undefined') return false
-    
+
     try {
       const hasVisited = localStorage.getItem('taskflow-visited')
       if (!hasVisited) {

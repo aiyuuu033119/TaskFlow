@@ -75,7 +75,7 @@ export function sanitizeEmail(email: string): string {
   }
 
   const sanitized = email.trim().toLowerCase()
-  
+
   if (!validator.isEmail(sanitized)) {
     throw new Error('Invalid email format')
   }
@@ -92,11 +92,13 @@ export function sanitizeUrl(url: string): string {
   }
 
   const sanitized = url.trim()
-  
-  if (!validator.isURL(sanitized, {
-    protocols: ['http', 'https'],
-    require_protocol: true,
-  })) {
+
+  if (
+    !validator.isURL(sanitized, {
+      protocols: ['http', 'https'],
+      require_protocol: true,
+    })
+  ) {
     throw new Error('Invalid URL format')
   }
 
@@ -106,9 +108,12 @@ export function sanitizeUrl(url: string): string {
 /**
  * Sanitize numeric input
  */
-export function sanitizeNumber(input: any, options: { min?: number; max?: number; isInt?: boolean } = {}): number {
+export function sanitizeNumber(
+  input: any,
+  options: { min?: number; max?: number; isInt?: boolean } = {},
+): number {
   const num = Number(input)
-  
+
   if (isNaN(num)) {
     throw new Error('Invalid number')
   }
@@ -134,7 +139,7 @@ export function sanitizeNumber(input: any, options: { min?: number; max?: number
 export function sanitizeArray<T>(
   input: any,
   itemSanitizer: (item: any) => T,
-  options: { maxLength?: number; unique?: boolean } = {}
+  options: { maxLength?: number; unique?: boolean } = {},
 ): T[] {
   if (!Array.isArray(input)) {
     return []
@@ -158,16 +163,21 @@ export function sanitizeArray<T>(
  */
 export function sanitizeObject<T extends Record<string, any>>(
   input: any,
-  allowedKeys: string[]
+  allowedKeys: string[],
 ): Partial<T> {
   if (typeof input !== 'object' || input === null) {
     return {}
   }
 
   const sanitized: Partial<T> = {}
-  
+
   for (const key of allowedKeys) {
-    if (key in input && !key.includes('__proto__') && !key.includes('constructor') && !key.includes('prototype')) {
+    if (
+      key in input &&
+      !key.includes('__proto__') &&
+      !key.includes('constructor') &&
+      !key.includes('prototype')
+    ) {
       sanitized[key as keyof T] = input[key]
     }
   }
@@ -191,7 +201,7 @@ export function sanitizeId(id: string): string {
   }
 
   const sanitized = id.trim()
-  
+
   // Validate CUID format (Prisma default)
   if (!/^c[a-z0-9]{24}$/.test(sanitized)) {
     throw new Error('Invalid ID format')
@@ -231,7 +241,7 @@ export function sanitizeSortField(field: string, allowedFields: string[]): strin
   }
 
   const sanitized = field.trim()
-  
+
   if (!allowedFields.includes(sanitized)) {
     throw new Error(`Invalid sort field. Allowed fields: ${allowedFields.join(', ')}`)
   }
@@ -248,7 +258,7 @@ export function sanitizeSortOrder(order: string): 'asc' | 'desc' {
   }
 
   const sanitized = order.trim().toLowerCase()
-  
+
   if (sanitized !== 'asc' && sanitized !== 'desc') {
     return 'desc'
   }

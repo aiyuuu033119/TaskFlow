@@ -1,18 +1,21 @@
 'use client'
 
-import { Task, TaskStatus } from '@/types'
+import type { Task, TaskStatus } from '@/types'
 import { TaskCard } from './task-card'
-import { Checkbox } from './ui/checkbox'
 import { Button } from './ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from './ui/select'
 import { useState } from 'react'
-import { CheckSquare, Square, MinusSquare, X, Trash2, Circle, PlayCircle, CheckCircle2, XCircle } from 'lucide-react'
+import {
+  CheckSquare,
+  Square,
+  MinusSquare,
+  X,
+  Trash2,
+  Circle,
+  PlayCircle,
+  CheckCircle2,
+  XCircle,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface TaskListProps {
@@ -52,19 +55,19 @@ export function TaskList({
 
   const handleSelectTask = (taskId: string, selected: boolean) => {
     if (!onSelectionChange) return
-    
+
     if (selected) {
       onSelectionChange([...selectedTaskIds, taskId])
     } else {
-      onSelectionChange(selectedTaskIds.filter(id => id !== taskId))
+      onSelectionChange(selectedTaskIds.filter((id) => id !== taskId))
     }
   }
 
   const handleSelectAll = (checked: boolean) => {
     if (!onSelectionChange) return
-    
+
     if (checked) {
-      onSelectionChange(tasks.map(task => task.id))
+      onSelectionChange(tasks.map((task) => task.id))
     } else {
       onSelectionChange([])
     }
@@ -75,7 +78,7 @@ export function TaskList({
 
   const handleBulkDelete = async () => {
     if (!onBulkDelete || selectedTaskIds.length === 0) return
-    
+
     setIsDeleting(true)
     try {
       await onBulkDelete(selectedTaskIds)
@@ -86,7 +89,7 @@ export function TaskList({
 
   const handleBulkStatusChange = async (status: TaskStatus) => {
     if (!onBulkStatusChange || selectedTaskIds.length === 0) return
-    
+
     setIsUpdatingStatus(true)
     try {
       await onBulkStatusChange(selectedTaskIds, status)
@@ -101,20 +104,20 @@ export function TaskList({
         <div className="relative mb-4 group animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Background decoration */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
-          
+
           <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-4 bg-background/80 backdrop-blur-sm rounded-xl border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3">
               {/* Custom select all button */}
               <button
                 onClick={() => handleSelectAll(!isAllSelected)}
                 className={cn(
-                  "relative flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200",
-                  "hover:scale-105 active:scale-95",
-                  isAllSelected 
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
+                  'relative flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200',
+                  'hover:scale-105 active:scale-95',
+                  isAllSelected
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
                     : isPartiallySelected
-                    ? "bg-primary/20 text-primary border border-primary/30"
-                    : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                      ? 'bg-primary/20 text-primary border border-primary/30'
+                      : 'bg-muted hover:bg-muted/80 text-muted-foreground',
                 )}
                 aria-label="Select all tasks"
               >
@@ -128,26 +131,26 @@ export function TaskList({
               </button>
 
               <div className="flex flex-col gap-1">
-                <span className={cn(
-                  "text-sm font-semibold transition-colors",
-                  selectedTaskIds.length > 0 ? "text-foreground" : "text-muted-foreground"
-                )}>
-                  {selectedTaskIds.length === 0 
-                    ? 'Select tasks' 
+                <span
+                  className={cn(
+                    'text-sm font-semibold transition-colors',
+                    selectedTaskIds.length > 0 ? 'text-foreground' : 'text-muted-foreground',
+                  )}
+                >
+                  {selectedTaskIds.length === 0
+                    ? 'Select tasks'
                     : isAllSelected
-                    ? 'All tasks selected'
-                    : `${selectedTaskIds.length} task${selectedTaskIds.length === 1 ? '' : 's'} selected`}
+                      ? 'All tasks selected'
+                      : `${selectedTaskIds.length} task${selectedTaskIds.length === 1 ? '' : 's'} selected`}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    {tasks.length} total
-                  </span>
+                  <span className="text-xs text-muted-foreground">{tasks.length} total</span>
                   {selectedTaskIds.length > 0 && (
                     <>
                       <span className="text-xs text-muted-foreground">•</span>
                       <div className="flex items-center gap-1.5">
                         <div className="h-1.5 w-20 bg-muted rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full bg-primary transition-all duration-300 ease-out"
                             style={{ width: `${(selectedTaskIds.length / tasks.length) * 100}%` }}
                           />
@@ -168,7 +171,7 @@ export function TaskList({
                 <>
                   {/* Status change dropdown */}
                   {onBulkStatusChange && (
-                    <Select 
+                    <Select
                       value=""
                       onValueChange={(value) => handleBulkStatusChange(value as TaskStatus)}
                       disabled={isUpdatingStatus}
@@ -240,7 +243,7 @@ export function TaskList({
                   <span className="sm:hidden">All</span>
                 </Button>
               )}
-              
+
               {/* Clear selection */}
               {selectedTaskIds.length > 0 && (
                 <Button
@@ -267,7 +270,9 @@ export function TaskList({
             onDelete={onDelete}
             isLoading={loadingStates[task.id] || false}
             isSelected={selectedTaskIds.includes(task.id)}
-            onSelectChange={showCheckboxes ? (selected) => handleSelectTask(task.id, selected) : undefined}
+            onSelectChange={
+              showCheckboxes ? (selected) => handleSelectTask(task.id, selected) : undefined
+            }
             showCheckbox={showCheckboxes}
           />
         ))}

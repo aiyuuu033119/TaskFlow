@@ -118,14 +118,18 @@ async function testErrorHandling() {
 
       if (response.status === test.expectedStatus) {
         if (test.expectedError && data.error !== test.expectedError) {
-          console.log(`   ❌ FAILED: Expected error "${test.expectedError}" but got "${data.error}"`)
+          console.log(
+            `   ❌ FAILED: Expected error "${test.expectedError}" but got "${data.error}"`,
+          )
           failed++
         } else {
           console.log(`   ✅ PASSED`)
           passed++
         }
       } else {
-        console.log(`   ❌ FAILED: Expected status ${test.expectedStatus} but got ${response.status}`)
+        console.log(
+          `   ❌ FAILED: Expected status ${test.expectedStatus} but got ${response.status}`,
+        )
         failed++
       }
     } catch (error) {

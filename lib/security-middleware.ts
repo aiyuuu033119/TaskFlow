@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { headers } from 'next/headers'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export interface SecurityOptions {
   maxRequestSize?: number
@@ -17,7 +17,7 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
  */
 export function withSecurity(options: SecurityOptions = {}) {
   return function securityMiddleware<T extends any[]>(
-    handler: (req: NextRequest, ...args: T) => Promise<NextResponse>
+    handler: (req: NextRequest, ...args: T) => Promise<NextResponse>,
   ) {
     return async (req: NextRequest, ...args: T): Promise<NextResponse> => {
       try {
@@ -25,10 +25,7 @@ export function withSecurity(options: SecurityOptions = {}) {
         if (options.maxRequestSize) {
           const contentLength = req.headers.get('content-length')
           if (contentLength && parseInt(contentLength) > options.maxRequestSize) {
-            return NextResponse.json(
-              { error: 'Request too large' },
-              { status: 413 }
-            )
+            return NextResponse.json({ error: 'Request too large' }, { status: 413 })
           }
         }
 
@@ -36,10 +33,7 @@ export function withSecurity(options: SecurityOptions = {}) {
         if (options.allowedOrigins) {
           const origin = req.headers.get('origin')
           if (origin && !options.allowedOrigins.includes(origin)) {
-            return NextResponse.json(
-              { error: 'Origin not allowed' },
-              { status: 403 }
-            )
+            return NextResponse.json({ error: 'Origin not allowed' }, { status: 403 })
           }
         }
 
@@ -48,19 +42,19 @@ export function withSecurity(options: SecurityOptions = {}) {
           const rateLimitResult = checkRateLimit(req, options.maxRequestsPerMinute || 60)
           if (!rateLimitResult.allowed) {
             return NextResponse.json(
-              { 
+              {
                 error: 'Rate limit exceeded',
-                retryAfter: rateLimitResult.retryAfter 
+                retryAfter: rateLimitResult.retryAfter,
               },
-              { 
+              {
                 status: 429,
                 headers: {
                   'Retry-After': rateLimitResult.retryAfter.toString(),
                   'X-RateLimit-Limit': (options.maxRequestsPerMinute || 60).toString(),
                   'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
                   'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-                }
-              }
+                },
+              },
             )
           }
         }
@@ -69,10 +63,7 @@ export function withSecurity(options: SecurityOptions = {}) {
         if (options.enableCSRF && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
           const csrfResult = checkCSRF(req)
           if (!csrfResult.valid) {
-            return NextResponse.json(
-              { error: 'CSRF token invalid or missing' },
-              { status: 403 }
-            )
+            return NextResponse.json({ error: 'CSRF token invalid or missing' }, { status: 403 })
           }
         }
 
@@ -82,7 +73,7 @@ export function withSecurity(options: SecurityOptions = {}) {
           if (!contentType || !contentType.includes('application/json')) {
             return NextResponse.json(
               { error: 'Content-Type must be application/json' },
-              { status: 400 }
+              { status: 400 },
             )
           }
         }
@@ -96,10 +87,7 @@ export function withSecurity(options: SecurityOptions = {}) {
         return response
       } catch (error) {
         console.error('Security middleware error:', error)
-        return NextResponse.json(
-          { error: 'Security validation failed' },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: 'Security validation failed' }, { status: 500 })
       }
     }
   }
@@ -108,7 +96,10 @@ export function withSecurity(options: SecurityOptions = {}) {
 /**
  * Check rate limiting for the request
  */
-function checkRateLimit(req: NextRequest, maxRequests: number): {
+function checkRateLimit(
+  req: NextRequest,
+  maxRequests: number,
+): {
   allowed: boolean
   remaining: number
   retryAfter: number
@@ -119,19 +110,19 @@ function checkRateLimit(req: NextRequest, maxRequests: number): {
   const windowMs = 60 * 1000 // 1 minute window
 
   const clientData = rateLimitStore.get(clientId)
-  
+
   if (!clientData || now > clientData.resetTime) {
     // First request or window expired
     rateLimitStore.set(clientId, {
       count: 1,
-      resetTime: now + windowMs
+      resetTime: now + windowMs,
     })
-    
+
     return {
       allowed: true,
       remaining: maxRequests - 1,
       retryAfter: 0,
-      resetTime: now + windowMs
+      resetTime: now + windowMs,
     }
   }
 
@@ -141,7 +132,7 @@ function checkRateLimit(req: NextRequest, maxRequests: number): {
       allowed: false,
       remaining: 0,
       retryAfter: Math.ceil((clientData.resetTime - now) / 1000),
-      resetTime: clientData.resetTime
+      resetTime: clientData.resetTime,
     }
   }
 
@@ -153,7 +144,7 @@ function checkRateLimit(req: NextRequest, maxRequests: number): {
     allowed: true,
     remaining: maxRequests - clientData.count,
     retryAfter: 0,
-    resetTime: clientData.resetTime
+    resetTime: clientData.resetTime,
   }
 }
 
@@ -175,7 +166,7 @@ function checkCSRF(req: NextRequest): { valid: boolean } {
   // For API routes, we can use the Origin header approach
   const origin = req.headers.get('origin')
   const host = req.headers.get('host')
-  
+
   if (!origin || !host) {
     return { valid: false }
   }
@@ -198,10 +189,10 @@ function addSecurityHeaders(response: NextResponse): void {
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  
+
   // Content Security Policy for API responses
   response.headers.set('Content-Security-Policy', "default-src 'none'")
-  
+
   // Remove server information
   response.headers.delete('server')
   response.headers.delete('x-powered-by')
@@ -219,12 +210,12 @@ export function validateRequestBody(body: any): { valid: boolean; error?: string
   const dangerousKeys = ['__proto__', 'constructor', 'prototype']
   const checkObject = (obj: any, path = ''): boolean => {
     if (typeof obj !== 'object' || obj === null) return true
-    
+
     for (const key in obj) {
       if (dangerousKeys.includes(key)) {
         return false
       }
-      
+
       if (typeof obj[key] === 'object' && obj[key] !== null) {
         if (!checkObject(obj[key], `${path}.${key}`)) {
           return false
@@ -255,12 +246,13 @@ export function sanitizeHeaders(req: NextRequest): Record<string, string> {
   ]
 
   const sanitized: Record<string, string> = {}
-  
+
   for (const [key, value] of req.headers.entries()) {
     if (allowedHeaders.includes(key.toLowerCase())) {
       // Remove null bytes and control characters
       const cleanValue = value.replace(/[\x00-\x1F\x7F]/g, '')
-      if (cleanValue.length <= 1000) { // Prevent header bombing
+      if (cleanValue.length <= 1000) {
+        // Prevent header bombing
         sanitized[key] = cleanValue
       }
     }

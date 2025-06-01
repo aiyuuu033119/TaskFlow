@@ -1,12 +1,8 @@
 'use client'
 
-import { Task, CreateTaskData, UpdateTaskData } from '@/types'
+import type { Task, CreateTaskData, UpdateTaskData } from '@/types'
 import { TaskForm } from './task-form'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
 
 interface TaskFormDialogProps {
@@ -16,12 +12,7 @@ interface TaskFormDialogProps {
   onSubmit: (data: CreateTaskData | UpdateTaskData) => void | Promise<void>
 }
 
-export function TaskFormDialog({
-  open,
-  onOpenChange,
-  task,
-  onSubmit,
-}: TaskFormDialogProps) {
+export function TaskFormDialog({ open, onOpenChange, task, onSubmit }: TaskFormDialogProps) {
   const handleSubmit = async (data: CreateTaskData | UpdateTaskData) => {
     await onSubmit(data)
     onOpenChange(false)
@@ -37,11 +28,7 @@ export function TaskFormDialog({
         <VisuallyHidden>
           <DialogTitle>{task ? 'Edit Task' : 'Create New Task'}</DialogTitle>
         </VisuallyHidden>
-        <TaskForm
-          task={task}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
+        <TaskForm task={task} onSubmit={handleSubmit} onCancel={handleCancel} />
       </DialogContent>
     </Dialog>
   )

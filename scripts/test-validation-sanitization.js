@@ -9,82 +9,82 @@ async function testValidationAndSanitization() {
       name: 'XSS in task title',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: '<script>alert("xss")</script>Test Task',
-        description: 'Safe description'
+        description: 'Safe description',
       },
       expectedStatus: 201,
       expectSanitized: true,
-      checkField: 'title'
+      checkField: 'title',
     },
     {
       name: 'XSS in task description',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'Safe title',
-        description: '<img src="x" onerror="alert(1)">Malicious description'
+        description: '<img src="x" onerror="alert(1)">Malicious description',
       },
       expectedStatus: 201,
       expectSanitized: true,
-      checkField: 'description'
+      checkField: 'description',
     },
-    
+
     // Input Length Validation
     {
       name: 'Title too long',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'A'.repeat(300), // Exceeds 255 character limit
-        description: 'Valid description'
+        description: 'Valid description',
       },
       expectedStatus: 400,
-      expectError: true
+      expectError: true,
     },
     {
       name: 'Description too long',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'Valid title',
-        description: 'A'.repeat(1100) // Exceeds 1000 character limit
+        description: 'A'.repeat(1100), // Exceeds 1000 character limit
       },
       expectedStatus: 400,
-      expectError: true
+      expectError: true,
     },
-    
+
     // Dangerous Characters in Search
     {
       name: 'SQL injection in search',
       method: 'GET',
       url: `${API_BASE_URL}/tasks?search=' OR 1=1 --`,
       expectedStatus: 200,
-      expectSanitized: true
+      expectSanitized: true,
     },
     {
       name: 'XSS in search parameter',
       method: 'GET',
       url: `${API_BASE_URL}/tasks?search=<script>alert("xss")</script>`,
       expectedStatus: 200,
-      expectSanitized: true
+      expectSanitized: true,
     },
-    
+
     // Prototype Pollution Tests
     {
       name: 'Prototype pollution attempt',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'Test',
         description: 'Test',
-        '__proto__': { isAdmin: true },
-        'constructor': { prototype: { isAdmin: true } }
+        __proto__: { isAdmin: true },
+        constructor: { prototype: { isAdmin: true } },
       },
       expectedStatus: 400,
-      expectError: true
+      expectError: true,
     },
-    
+
     // Rate Limiting Tests
     {
       name: 'Rate limiting test (multiple requests)',
@@ -93,9 +93,9 @@ async function testValidationAndSanitization() {
       requestCount: 35, // Exceeds 30 requests per minute for POST
       body: { title: 'Rate limit test', description: 'Test' },
       expectedStatus: 429,
-      expectRateLimit: true
+      expectRateLimit: true,
     },
-    
+
     // CSRF Protection Tests
     {
       name: 'Missing Origin header',
@@ -104,9 +104,9 @@ async function testValidationAndSanitization() {
       body: { title: 'CSRF test', description: 'Test' },
       removeOrigin: true,
       expectedStatus: 403,
-      expectError: true
+      expectError: true,
     },
-    
+
     // Content Type Validation
     {
       name: 'Invalid content type',
@@ -115,36 +115,36 @@ async function testValidationAndSanitization() {
       body: 'title=test&description=test', // Form data instead of JSON
       contentType: 'application/x-www-form-urlencoded',
       expectedStatus: 400,
-      expectError: true
+      expectError: true,
     },
-    
+
     // Large Request Body
     {
       name: 'Request body too large',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'Test',
         description: 'A'.repeat(10000), // Very large description
-        extraData: 'B'.repeat(50000) // Additional large data
+        extraData: 'B'.repeat(50000), // Additional large data
       },
       expectedStatus: 413,
-      expectError: true
+      expectError: true,
     },
-    
+
     // Special Characters Sanitization
     {
       name: 'Null bytes in input',
       method: 'POST',
       url: `${API_BASE_URL}/tasks`,
-      body: { 
+      body: {
         title: 'Test\x00Title',
-        description: 'Description\x00with\x00nulls'
+        description: 'Description\x00with\x00nulls',
       },
       expectedStatus: 201,
-      expectSanitized: true
+      expectSanitized: true,
     },
-    
+
     // Invalid JSON Structure
     {
       name: 'Invalid JSON structure',
@@ -153,8 +153,8 @@ async function testValidationAndSanitization() {
       body: '{"title": "test", "description":}', // Invalid JSON
       rawBody: true,
       expectedStatus: 400,
-      expectError: true
-    }
+      expectError: true,
+    },
   ]
 
   let passed = 0
@@ -164,18 +164,20 @@ async function testValidationAndSanitization() {
   for (const test of tests) {
     try {
       console.log(`\n📝 Testing: ${test.name}`)
-      
+
       if (test.method === 'BURST') {
         // Rate limiting test - send multiple requests quickly
         const results = await Promise.all(
-          Array(test.requestCount).fill().map(() => 
-            makeRequest(test.url, test.method, test.body, test)
-          )
+          Array(test.requestCount)
+            .fill()
+            .map(() => makeRequest(test.url, test.method, test.body, test)),
         )
-        
-        const rateLimitResponses = results.filter(r => r.status === 429)
+
+        const rateLimitResponses = results.filter((r) => r.status === 429)
         if (rateLimitResponses.length > 0) {
-          console.log(`   ✅ PASSED - Rate limiting triggered after ${results.length - rateLimitResponses.length} requests`)
+          console.log(
+            `   ✅ PASSED - Rate limiting triggered after ${results.length - rateLimitResponses.length} requests`,
+          )
           passed++
         } else {
           console.log(`   ❌ FAILED - Rate limiting not triggered`)
@@ -186,7 +188,7 @@ async function testValidationAndSanitization() {
 
       const response = await makeRequest(test.url, test.method, test.body, test)
       const data = response.status !== 413 ? await response.json().catch(() => ({})) : {}
-      
+
       console.log(`   Status: ${response.status}`)
       console.log(`   Response: ${JSON.stringify(data, null, 2)}`)
 
@@ -201,7 +203,11 @@ async function testValidationAndSanitization() {
         if (test.expectSanitized && response.status === 201) {
           // Check if input was sanitized
           const fieldValue = data[test.checkField] || JSON.stringify(data)
-          if (!fieldValue.includes('<script>') && !fieldValue.includes('onerror') && !fieldValue.includes('\x00')) {
+          if (
+            !fieldValue.includes('<script>') &&
+            !fieldValue.includes('onerror') &&
+            !fieldValue.includes('\x00')
+          ) {
             console.log(`   ✅ PASSED - Input was properly sanitized`)
             testPassed = true
           } else {
@@ -218,7 +224,9 @@ async function testValidationAndSanitization() {
           testPassed = true
         }
       } else {
-        console.log(`   ❌ FAILED - Expected status ${test.expectedStatus} but got ${response.status}`)
+        console.log(
+          `   ❌ FAILED - Expected status ${test.expectedStatus} but got ${response.status}`,
+        )
       }
 
       if (testPassed) {
@@ -226,7 +234,6 @@ async function testValidationAndSanitization() {
       } else {
         failed++
       }
-
     } catch (error) {
       console.log(`   ❌ FAILED - Error: ${error.message}`)
       failed++
@@ -259,7 +266,7 @@ async function testValidationAndSanitization() {
 async function makeRequest(url, method, body, options = {}) {
   const requestOptions = {
     method: method === 'BURST' ? 'POST' : method,
-    headers: {}
+    headers: {},
   }
 
   // Set content type

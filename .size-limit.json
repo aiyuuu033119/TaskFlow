@@ -1,0 +1,17 @@
+[
+  {
+    "name": "JS Bundle",
+    "path": ".next/static/chunks/**/*.js",
+    "limit": "150 KB"
+  },
+  {
+    "name": "CSS Bundle",
+    "path": ".next/static/css/**/*.css",
+    "limit": "50 KB"
+  },
+  {
+    "name": "Total Bundle Size",
+    "path": [".next/static/chunks/**/*.js", ".next/static/css/**/*.css"],
+    "limit": "200 KB"
+  }
+]

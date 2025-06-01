@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { bulkDeleteSchema, bulkUpdateSchema } from '@/lib/validations/task'
 import { withErrorHandler, ApiError } from '@/lib/api-errors'
@@ -9,82 +10,86 @@ export const PATCH = withSecurity({
   maxRequestsPerMinute: 20,
   maxRequestSize: 1024 * 10, // 10KB
   enableCSRF: true,
-})(withErrorHandler(async (request: NextRequest) => {
-  const body = await request.json()
-  
-  // Validate request body structure
-  const bodyValidation = validateRequestBody(body)
-  if (!bodyValidation.valid) {
-    throw new ApiError(400, bodyValidation.error || 'Invalid request body')
-  }
-  
-  // Validate and sanitize request data
-  const validatedData = bulkUpdateSchema.parse(body)
+})(
+  withErrorHandler(async (request: NextRequest) => {
+    const body = await request.json()
 
-  // Check if all tasks exist
-  const existingTasks = await prisma.task.findMany({
-    where: { id: { in: validatedData.ids } },
-    select: { id: true },
-  })
+    // Validate request body structure
+    const bodyValidation = validateRequestBody(body)
+    if (!bodyValidation.valid) {
+      throw new ApiError(400, bodyValidation.error || 'Invalid request body')
+    }
 
-  if (existingTasks.length !== validatedData.ids.length) {
-    const foundIds = existingTasks.map(task => task.id)
-    const missingIds = validatedData.ids.filter(id => !foundIds.includes(id))
-    throw new ApiError(404, `Tasks not found: ${missingIds.join(', ')}`)
-  }
+    // Validate and sanitize request data
+    const validatedData = bulkUpdateSchema.parse(body)
 
-  // Update tasks
-  const updatedTasks = await prisma.task.updateMany({
-    where: { id: { in: validatedData.ids } },
-    data: {
-      ...validatedData.data,
-      updatedAt: new Date(),
-    },
-  })
+    // Check if all tasks exist
+    const existingTasks = await prisma.task.findMany({
+      where: { id: { in: validatedData.ids } },
+      select: { id: true },
+    })
 
-  // Fetch updated tasks to return
-  const tasks = await prisma.task.findMany({
-    where: { id: { in: validatedData.ids } },
-  })
+    if (existingTasks.length !== validatedData.ids.length) {
+      const foundIds = existingTasks.map((task) => task.id)
+      const missingIds = validatedData.ids.filter((id) => !foundIds.includes(id))
+      throw new ApiError(404, `Tasks not found: ${missingIds.join(', ')}`)
+    }
 
-  return NextResponse.json(tasks)
-}))
+    // Update tasks
+    await prisma.task.updateMany({
+      where: { id: { in: validatedData.ids } },
+      data: {
+        ...validatedData.data,
+        updatedAt: new Date(),
+      },
+    })
+
+    // Fetch updated tasks to return
+    const tasks = await prisma.task.findMany({
+      where: { id: { in: validatedData.ids } },
+    })
+
+    return NextResponse.json(tasks)
+  }),
+)
 
 export const DELETE = withSecurity({
   enableRateLimit: true,
   maxRequestsPerMinute: 10,
   enableCSRF: true,
-})(withErrorHandler(async (request: NextRequest) => {
-  const body = await request.json()
-  
-  // Validate request body structure
-  const bodyValidation = validateRequestBody(body)
-  if (!bodyValidation.valid) {
-    throw new ApiError(400, bodyValidation.error || 'Invalid request body')
-  }
-  
-  // Validate and sanitize request data
-  const validatedData = bulkDeleteSchema.parse(body)
+})(
+  withErrorHandler(async (request: NextRequest) => {
+    const body = await request.json()
 
-  // Check if all tasks exist
-  const existingTasks = await prisma.task.findMany({
-    where: { id: { in: validatedData.ids } },
-    select: { id: true },
-  })
+    // Validate request body structure
+    const bodyValidation = validateRequestBody(body)
+    if (!bodyValidation.valid) {
+      throw new ApiError(400, bodyValidation.error || 'Invalid request body')
+    }
 
-  if (existingTasks.length !== validatedData.ids.length) {
-    const foundIds = existingTasks.map(task => task.id)
-    const missingIds = validatedData.ids.filter(id => !foundIds.includes(id))
-    throw new ApiError(404, `Tasks not found: ${missingIds.join(', ')}`)
-  }
+    // Validate and sanitize request data
+    const validatedData = bulkDeleteSchema.parse(body)
 
-  // Delete tasks
-  await prisma.task.deleteMany({
-    where: { id: { in: validatedData.ids } },
-  })
+    // Check if all tasks exist
+    const existingTasks = await prisma.task.findMany({
+      where: { id: { in: validatedData.ids } },
+      select: { id: true },
+    })
 
-  return NextResponse.json({
-    message: `${validatedData.ids.length} tasks deleted successfully`,
-    deletedIds: validatedData.ids,
-  })
-}))
+    if (existingTasks.length !== validatedData.ids.length) {
+      const foundIds = existingTasks.map((task) => task.id)
+      const missingIds = validatedData.ids.filter((id) => !foundIds.includes(id))
+      throw new ApiError(404, `Tasks not found: ${missingIds.join(', ')}`)
+    }
+
+    // Delete tasks
+    await prisma.task.deleteMany({
+      where: { id: { in: validatedData.ids } },
+    })
+
+    return NextResponse.json({
+      message: `${validatedData.ids.length} tasks deleted successfully`,
+      deletedIds: validatedData.ids,
+    })
+  }),
+)

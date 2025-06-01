@@ -8,8 +8,8 @@ async function testConnection() {
         title: 'Test Task',
         description: 'This is a test task to verify database connection',
         priority: 'high',
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     })
     console.log('✅ Created task:', task)
 
@@ -20,13 +20,13 @@ async function testConnection() {
     // Test updating a task
     const updatedTask = await prisma.task.update({
       where: { id: task.id },
-      data: { status: 'completed' }
+      data: { status: 'completed' },
     })
     console.log('✅ Updated task status:', updatedTask.status)
 
     // Test deleting a task
     await prisma.task.delete({
-      where: { id: task.id }
+      where: { id: task.id },
     })
     console.log('✅ Deleted task')
 

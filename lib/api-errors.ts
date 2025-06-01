@@ -6,7 +6,7 @@ export class ApiError extends Error {
   constructor(
     public statusCode: number,
     public message: string,
-    public details?: any
+    public details?: any,
   ) {
     super(message)
     this.name = 'ApiError'
@@ -24,7 +24,7 @@ export function handleApiError(error: unknown): NextResponse {
         message: 'Invalid request data',
         details: error.errors,
       },
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -36,7 +36,7 @@ export function handleApiError(error: unknown): NextResponse {
         message: error.message,
         details: error.details,
       },
-      { status: error.statusCode }
+      { status: error.statusCode },
     )
   }
 
@@ -50,7 +50,7 @@ export function handleApiError(error: unknown): NextResponse {
             message: 'A record with this value already exists',
             details: { fields: error.meta?.target },
           },
-          { status: 409 }
+          { status: 409 },
         )
       case 'P2025':
         return NextResponse.json(
@@ -58,7 +58,7 @@ export function handleApiError(error: unknown): NextResponse {
             error: 'Not Found',
             message: 'Task not found',
           },
-          { status: 404 }
+          { status: 404 },
         )
       case 'P2003':
         return NextResponse.json(
@@ -67,7 +67,7 @@ export function handleApiError(error: unknown): NextResponse {
             message: 'Operation failed due to foreign key constraint',
             details: { field: error.meta?.field_name },
           },
-          { status: 400 }
+          { status: 400 },
         )
       default:
         return NextResponse.json(
@@ -76,7 +76,7 @@ export function handleApiError(error: unknown): NextResponse {
             message: 'A database error occurred',
             details: { code: error.code },
           },
-          { status: 500 }
+          { status: 500 },
         )
     }
   }
@@ -87,7 +87,7 @@ export function handleApiError(error: unknown): NextResponse {
         error: 'Validation Error',
         message: 'Invalid data provided to the database',
       },
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -96,11 +96,10 @@ export function handleApiError(error: unknown): NextResponse {
     return NextResponse.json(
       {
         error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'production' 
-          ? 'An unexpected error occurred' 
-          : error.message,
+        message:
+          process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : error.message,
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 
@@ -110,13 +109,13 @@ export function handleApiError(error: unknown): NextResponse {
       error: 'Internal Server Error',
       message: 'An unexpected error occurred',
     },
-    { status: 500 }
+    { status: 500 },
   )
 }
 
 // Helper function to wrap async route handlers
 export function withErrorHandler<T extends any[], R>(
-  handler: (...args: T) => Promise<R>
+  handler: (...args: T) => Promise<R>,
 ): (...args: T) => Promise<R | NextResponse> {
   return async (...args: T) => {
     try {

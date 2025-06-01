@@ -16,7 +16,7 @@ export interface ApiResponse<T = any> {
 
 export function createSuccessResponse<T>(
   data: T,
-  status: number = 200
+  status: number = 200,
 ): NextResponse<ApiResponse<T>> {
   return NextResponse.json<ApiResponse<T>>(
     {
@@ -26,7 +26,7 @@ export function createSuccessResponse<T>(
         timestamp: new Date().toISOString(),
       },
     },
-    { status }
+    { status },
   )
 }
 
@@ -34,7 +34,7 @@ export function createErrorResponse(
   code: string,
   message: string,
   status: number = 500,
-  details?: any
+  details?: any,
 ): NextResponse<ApiResponse> {
   return NextResponse.json<ApiResponse>(
     {
@@ -48,7 +48,7 @@ export function createErrorResponse(
         timestamp: new Date().toISOString(),
       },
     },
-    { status }
+    { status },
   )
 }
 
@@ -61,15 +61,15 @@ export const ErrorCodes = {
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
-  
+
   // Server errors
   INTERNAL_ERROR: 'INTERNAL_ERROR',
   DATABASE_ERROR: 'DATABASE_ERROR',
   EXTERNAL_SERVICE_ERROR: 'EXTERNAL_SERVICE_ERROR',
-  
+
   // Business logic errors
   TASK_LIMIT_EXCEEDED: 'TASK_LIMIT_EXCEEDED',
   INVALID_STATUS_TRANSITION: 'INVALID_STATUS_TRANSITION',
 } as const
 
-export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes]
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes]
