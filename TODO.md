@@ -80,7 +80,7 @@ These are the critical tasks that should be completed next:
 ## 🟢 Low Priority - Future Enhancements
 
 - [ ] Set up CI/CD pipeline with GitHub Actions
-- [ ] Configure deployment to Vercel or similar platform
+- [ ] Configure deployment to production platform
 - [ ] Create API documentation with examples
 - [ ] Add task templates and recurring tasks
 - [ ] Implement task dependencies

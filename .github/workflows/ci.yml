@@ -196,25 +196,6 @@
 #   #         uploadArtifacts: true
 #   #         temporaryPublicStorage: true
 # 
-#   # Job 6: Deploy Preview (for PRs)
-#   # deploy-preview:
-#   #   name: Deploy Preview
-#   #   runs-on: ubuntu-latest
-#   #   needs: [build, unit-tests]
-#   #   if: github.event_name == 'pull_request'
-#     
-#   #   steps:
-#   #     - name: Checkout code
-#   #       uses: actions/checkout@v4
-# 
-#   #     - name: Deploy to Vercel Preview
-#   #       uses: amondnet/vercel-action@v25
-#   #       with:
-#   #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-#   #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-#   #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-#   #         github-token: ${{ secrets.GITHUB_TOKEN }}
-#   #         scope: ${{ secrets.VERCEL_ORG_ID }}
 # 
 #   # Job 7: Release
 #   release:
