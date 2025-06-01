@@ -64,9 +64,6 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run database migrations
-        run: npx prisma migrate deploy
-
       - name: Build Next.js application
         run: npm run build
 
