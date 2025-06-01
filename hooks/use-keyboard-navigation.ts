@@ -83,9 +83,11 @@ export function useKeyboardNavigation({
           break
         case 'Enter':
           if (
-            (onSelect && !event.target) ||
-            (event.target instanceof HTMLElement &&
-              !['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))
+            onSelect &&
+            ((event.target &&
+              event.target instanceof HTMLElement &&
+              !['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName)) ||
+              !event.target)
           ) {
             event.preventDefault()
             onSelect()

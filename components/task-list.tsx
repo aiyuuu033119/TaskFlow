@@ -116,7 +116,7 @@ export function TaskList({
   const toggleFocusedTaskStatus = useCallback(() => {
     if (focusedIndex >= 0 && focusedIndex < tasks.length) {
       const task = tasks[focusedIndex]
-      const newStatus = task.status === 'completed' ? 'pending' : 'completed'
+      const newStatus = task.status === 'COMPLETED' ? 'PENDING' : 'COMPLETED'
       onStatusChange?.(task.id, newStatus)
     }
   }, [focusedIndex, tasks, onStatusChange])
