@@ -17,12 +17,12 @@
     }
   },
   "env": {
-    "DATABASE_URL": "@database_url",
+    "DATABASE_URL": "@DATABASE_URL",
     "NEXT_PUBLIC_APP_URL": "@next_public_app_url"
   },
   "build": {
     "env": {
-      "DATABASE_URL": "@database_url"
+      "DATABASE_URL": "@DATABASE_URL"
     }
   },
   "headers": [
