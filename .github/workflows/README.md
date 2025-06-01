@@ -39,16 +39,11 @@ Configure these in GitHub Settings → Secrets → Actions:
    npm run scripts/setup-ci.sh
    ```
 
-2. **Create Vercel Project:**
-   - Go to https://vercel.com/new
-   - Import your GitHub repository
-   - Note the project ID and org ID
-
-3. **Configure GitHub Secrets:**
+2. **Configure GitHub Secrets:**
    - Go to repository Settings → Secrets → Actions
    - Add all required secrets listed above
 
-4. **Configure Vercel Environment Variables:**
+3. **Configure Environment Variables:**
    - `DATABASE_URL`: Your production database connection string
    - `NEXT_PUBLIC_APP_URL`: Your production URL
 
@@ -78,15 +73,8 @@ npm run validate
 
 ## Deployment Process
 
-### Automatic Deployments
-- **Production**: Merges to `main` trigger production deployments
-- **Preview**: PRs get automatic preview deployments
-
 ### Manual Deployment
-Trigger a deployment manually:
-1. Go to Actions tab
-2. Select "Deploy to Production"
-3. Click "Run workflow"
+To deploy your application, you'll need to set up your own deployment pipeline with your preferred hosting provider.
 
 ## Monitoring
 
@@ -94,8 +82,7 @@ Trigger a deployment manually:
 Check workflow runs at: https://github.com/aiyuuu033119/TaskFlow/actions
 
 ### Deployment Status
-- Vercel Dashboard: https://vercel.com/dashboard
-- GitHub Deployments: https://github.com/aiyuuu033119/TaskFlow/deployments
+- GitHub Actions: https://github.com/aiyuuu033119/TaskFlow/actions
 
 ### Code Quality
 - CodeCov: https://codecov.io/gh/aiyuuu033119/TaskFlow
@@ -109,8 +96,8 @@ Check workflow runs at: https://github.com/aiyuuu033119/TaskFlow/actions
 3. Ensure all dependencies are installed
 
 ### Deployment Issues
-1. Verify Vercel secrets are correct
-2. Check Vercel dashboard for errors
+1. Verify deployment secrets are correct
+2. Check your hosting provider dashboard for errors
 3. Ensure environment variables are set
 
 ### Test Failures
