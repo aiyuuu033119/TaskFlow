@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository uses GitHub Actions for continuous integration and deployment. The pipeline includes automated testing, code quality checks, security scanning, and deployment to Vercel.
+This repository uses GitHub Actions for continuous integration. The pipeline includes automated testing, code quality checks, and security scanning.
 
 ## Workflows
 
@@ -16,17 +16,9 @@ Runs on every push and pull request to main/develop branches.
 - **E2E Tests**: Runs Playwright tests
 - **Security Audit**: npm audit and Snyk scanning
 - **Lighthouse**: Performance testing
-- **Deploy Preview**: Deploys PR previews to Vercel
 - **Release**: Automated semantic versioning and releases
 
-### 2. Deploy to Production (`deploy.yml`)
-Runs on push to main branch.
-
-**Jobs:**
-- **Deploy**: Deploys to Vercel production
-- **Production Tests**: Runs E2E tests against production
-
-### 3. Code Quality (`code-quality.yml`)
+### 2. Code Quality (`code-quality.yml`)
 Runs on pull requests.
 
 **Jobs:**
@@ -35,17 +27,12 @@ Runs on pull requests.
 - SonarCloud code quality scan
 - Automated PR comments with metrics
 
-### 4. Dependabot Auto-Merge (`dependabot.yml`)
+### 3. Dependabot Auto-Merge (`dependabot.yml`)
 Automatically merges Dependabot PRs that pass tests.
 
 ## Required Secrets
 
 Configure these in GitHub Settings → Secrets → Actions:
-
-### Essential
-- `VERCEL_TOKEN`: Your Vercel authentication token
-- `VERCEL_ORG_ID`: Your Vercel organization ID
-- `VERCEL_PROJECT_ID`: Your Vercel project ID
 
 ### Optional
 - `CODECOV_TOKEN`: For coverage reports
@@ -61,16 +48,11 @@ Configure these in GitHub Settings → Secrets → Actions:
    npm run scripts/setup-ci.sh
    ```
 
-2. **Create Vercel Project:**
-   - Go to https://vercel.com/new
-   - Import your GitHub repository
-   - Note the project ID and org ID
-
-3. **Configure GitHub Secrets:**
+2. **Configure GitHub Secrets:**
    - Go to repository Settings → Secrets → Actions
    - Add all required secrets listed above
 
-4. **Configure Vercel Environment Variables:**
+3. **Configure Environment Variables:**
    - `DATABASE_URL`: Your production database connection string
    - `NEXT_PUBLIC_APP_URL`: Your production URL
 
@@ -100,15 +82,8 @@ npm run validate
 
 ## Deployment Process
 
-### Automatic Deployments
-- **Production**: Merges to `main` trigger production deployments
-- **Preview**: PRs get automatic preview deployments
-
 ### Manual Deployment
-Trigger a deployment manually:
-1. Go to Actions tab
-2. Select "Deploy to Production"
-3. Click "Run workflow"
+To deploy your application, you'll need to set up your own deployment pipeline with your preferred hosting provider.
 
 ## Monitoring
 
@@ -116,8 +91,7 @@ Trigger a deployment manually:
 Check workflow runs at: https://github.com/aiyuuu033119/TaskFlow/actions
 
 ### Deployment Status
-- Vercel Dashboard: https://vercel.com/dashboard
-- GitHub Deployments: https://github.com/aiyuuu033119/TaskFlow/deployments
+- GitHub Actions: https://github.com/aiyuuu033119/TaskFlow/actions
 
 ### Code Quality
 - CodeCov: https://codecov.io/gh/aiyuuu033119/TaskFlow
@@ -131,8 +105,8 @@ Check workflow runs at: https://github.com/aiyuuu033119/TaskFlow/actions
 3. Ensure all dependencies are installed
 
 ### Deployment Issues
-1. Verify Vercel secrets are correct
-2. Check Vercel dashboard for errors
+1. Verify deployment secrets are correct
+2. Check your hosting provider dashboard for errors
 3. Ensure environment variables are set
 
 ### Test Failures
