@@ -41,7 +41,8 @@
       "Bash(sed:*)",
       "Bash(mkdir:*)",
       "Bash(chmod:*)",
-      "Bash(ssh-keygen:*)"
+      "Bash(ssh-keygen:*)",
+      "Bash(git config:*)"
     ],
     "deny": []
   },

@@ -191,6 +191,7 @@ function TaskManagerApiContent() {
         description: task.description,
         priority: task.priority,
         status: task.status,
+        deadline: task.deadline,
       },
     })
   }
@@ -443,6 +444,7 @@ function TaskManagerApiContent() {
                   description: editingTask.data.description,
                   status: editingTask.data.status || 'PENDING',
                   priority: editingTask.data.priority || 'MEDIUM',
+                  deadline: editingTask.data.deadline,
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 } as Task)

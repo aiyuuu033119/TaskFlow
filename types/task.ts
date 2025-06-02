@@ -11,14 +11,14 @@ export interface Task {
   createdAt: Date | string
   updatedAt: Date | string
   completedAt?: Date | string | null
-  dueDate?: Date | string | null
+  deadline?: Date | string | null
 }
 
 export interface CreateTaskData {
   title: string
   description?: string
   priority: TaskPriority
-  dueDate?: string
+  deadline?: string
 }
 
 export interface UpdateTaskData {
@@ -26,13 +26,13 @@ export interface UpdateTaskData {
   description?: string
   status?: TaskStatus
   priority?: TaskPriority
-  dueDate?: string
+  deadline?: string
 }
 
 export interface TaskFilters {
   status?: TaskStatus[]
   priority?: TaskPriority[]
   search?: string
-  sortBy?: 'createdAt' | 'updatedAt' | 'dueDate' | 'priority' | 'title'
+  sortBy?: 'createdAt' | 'updatedAt' | 'deadline' | 'priority' | 'title'
   sortOrder?: 'asc' | 'desc'
 }

@@ -24,6 +24,12 @@ export const createTaskSchema = z.object({
     .transform((val) => (val ? sanitizeString(val, { maxLength: 1000, trim: true }) : val)),
   priority: taskPrioritySchema.default('MEDIUM'),
   status: taskStatusSchema.default('PENDING'),
+  deadline: z
+    .string()
+    .datetime({ offset: true })
+    .optional()
+    .nullable()
+    .transform((val) => (val ? new Date(val) : null)),
 })
 
 export const updateTaskSchema = z.object({
@@ -41,6 +47,12 @@ export const updateTaskSchema = z.object({
     .transform((val) => (val ? sanitizeString(val, { maxLength: 1000, trim: true }) : val)),
   priority: taskPrioritySchema.optional(),
   status: taskStatusSchema.optional(),
+  deadline: z
+    .string()
+    .datetime({ offset: true })
+    .optional()
+    .nullable()
+    .transform((val) => (val ? new Date(val) : null)),
 })
 
 export const taskIdSchema = z.object({
@@ -59,7 +71,7 @@ export const taskQuerySchema = z.object({
   sortBy: z
     .string()
     .transform((val) =>
-      sanitizeSortField(val, ['createdAt', 'updatedAt', 'priority', 'status', 'title']),
+      sanitizeSortField(val, ['createdAt', 'updatedAt', 'priority', 'status', 'title', 'deadline']),
     )
     .default('createdAt'),
   sortOrder: z

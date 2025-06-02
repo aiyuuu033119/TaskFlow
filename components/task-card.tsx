@@ -69,7 +69,7 @@ export function TaskCard({
 
   const isCompleted = task.status === 'COMPLETED'
   const isCancelled = task.status === 'CANCELLED'
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !isCompleted
+  const isOverdue = task.deadline && new Date(task.deadline) < new Date() && !isCompleted
 
   const handleStatusChange = (newStatus: string) => {
     if (onStatusChange && newStatus !== task.status) {
@@ -296,7 +296,7 @@ export function TaskCard({
           </div>
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground/70">
-            {task.dueDate && (
+            {task.deadline && (
               <div
                 className={cn(
                   'flex items-center gap-1.5 px-2 py-0.5 rounded-full',
@@ -306,7 +306,7 @@ export function TaskCard({
                 )}
               >
                 <CalendarDays className="h-3 w-3" />
-                <span>{formatDate(task.dueDate)}</span>
+                <span>{formatDate(task.deadline)}</span>
               </div>
             )}
             <div className="flex items-center gap-1.5">
