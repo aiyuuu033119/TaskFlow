@@ -28,9 +28,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   const [description, setDescription] = useState(task?.description || '')
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'LOW')
   const [deadline, setDeadline] = useState(
-    task?.deadline
-      ? new Date(task.deadline).toISOString().split('T')[0]
-      : '',
+    task?.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
   )
 
   const { loading: asyncLoading, execute } = useAsync(async (data: any) => {
