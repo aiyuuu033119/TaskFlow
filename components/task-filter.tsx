@@ -127,7 +127,7 @@ export function TaskFilter({
   const setIsExpanded = onExpandedChange || setLocalExpanded
   const [showClearConfirmation, setShowClearConfirmation] = useState(false)
   const [searchValue, setSearchValue] = useState(filters.search || '')
-  const searchTimeoutRef = useRef<NodeJS.Timeout>()
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Update local search value when filters change externally
