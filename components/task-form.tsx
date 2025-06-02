@@ -64,7 +64,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full !border-0">
       <CardHeader className="pb-3 sm:pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base sm:text-lg">

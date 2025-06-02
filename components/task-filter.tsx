@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,8 @@ interface TaskFilterProps {
     completed: number
     cancelled: number
   }
+  expanded?: boolean
+  onExpandedChange?: (expanded: boolean) => void
 }
 
 const statusOptions: { value: TaskStatus; label: string; icon: React.ReactNode; color: string }[] =
@@ -113,35 +115,82 @@ const sortOptions = [
   { value: 'title', label: 'Title' },
 ] as const
 
-export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+export function TaskFilter({
+  filters,
+  onFiltersChange,
+  taskCounts,
+  expanded,
+  onExpandedChange,
+}: TaskFilterProps) {
+  const [localExpanded, setLocalExpanded] = useState(false)
+  const isExpanded = expanded !== undefined ? expanded : localExpanded
+  const setIsExpanded = onExpandedChange || setLocalExpanded
   const [showClearConfirmation, setShowClearConfirmation] = useState(false)
+  const [searchValue, setSearchValue] = useState(filters.search || '')
+  const searchTimeoutRef = useRef<NodeJS.Timeout>()
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const handleSearchChange = (search: string) => {
-    onFiltersChange({ ...filters, search: search || undefined })
+  // Update local search value when filters change externally
+  useEffect(() => {
+    setSearchValue(filters.search || '')
+  }, [filters.search])
+
+  // Preserve focus on search input during re-renders
+  useEffect(() => {
+    const searchInput = searchInputRef.current
+    if (searchInput && document.activeElement === searchInput) {
+      const cursorPosition = searchInput.selectionStart
+      searchInput.focus()
+      if (cursorPosition !== null) {
+        searchInput.setSelectionRange(cursorPosition, cursorPosition)
+      }
+    }
+  })
+
+  const handleSearchSubmit = () => {
+    // Update filters only on submit
+    onFiltersChange({ ...filters, search: searchValue || undefined })
   }
 
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSearchSubmit()
+    }
+  }
+
+  const handleClearSearch = () => {
+    setSearchValue('')
+    onFiltersChange({ ...filters, search: undefined })
+    searchInputRef.current?.focus()
+  }
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const handleStatusToggle = (status: TaskStatus) => {
-    const currentStatuses = filters.status || []
-    const newStatuses = currentStatuses.includes(status)
-      ? currentStatuses.filter((s) => s !== status)
-      : [...currentStatuses, status]
+    // If clicking the same status, clear it. Otherwise, set only this status.
+    const newStatus = filters.status?.includes(status) ? undefined : [status]
 
     onFiltersChange({
       ...filters,
-      status: newStatuses.length > 0 ? newStatuses : undefined,
+      status: newStatus,
     })
   }
 
   const handlePriorityToggle = (priority: TaskPriority) => {
-    const currentPriorities = filters.priority || []
-    const newPriorities = currentPriorities.includes(priority)
-      ? currentPriorities.filter((p) => p !== priority)
-      : [...currentPriorities, priority]
+    // If clicking the same priority, clear it. Otherwise, set only this priority.
+    const newPriority = filters.priority?.includes(priority) ? undefined : [priority]
 
     onFiltersChange({
       ...filters,
-      priority: newPriorities.length > 0 ? newPriorities : undefined,
+      priority: newPriority,
     })
   }
 
@@ -202,12 +251,12 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
           <div className="flex items-center gap-1">
             {hasActiveFilters && (
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="sm"
                 onClick={handleClearFilters}
-                className="h-8 px-2 text-xs hover:bg-destructive/10 hover:text-destructive"
+                className="h-8 px-2 text-xs"
               >
-                <X className="h-3 w-3 mr-1" />
+                <X className="h-3 w-3 mr-0.5" />
                 Clear all
               </Button>
             )}
@@ -228,21 +277,25 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
+            ref={searchInputRef}
+            id="task-search-input"
+            type="search"
             placeholder="Search by title or description..."
-            value={filters.search || ''}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9 pr-3 transition-all focus:ring-2 focus:ring-primary/20"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleSearchKeyPress}
+            className="pl-9 pr-24 transition-all focus:ring-2 focus:ring-primary/20"
           />
-          {filters.search && (
+          <div className="absolute right-1 top-1/2 transform -translate-y-1/2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleSearchChange('')}
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 opacity-60 hover:opacity-100"
+              onClick={handleSearchSubmit}
+              size="sm"
+              className="h-7 px-3"
+              variant={searchValue !== (filters.search || '') ? 'default' : 'secondary'}
             >
-              <X className="h-3 w-3" />
+              Search
             </Button>
-          )}
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -283,22 +336,30 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleStatusToggle(option.value)}
-                    className={cn(
-                      'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                      'border hover:shadow-sm',
-                      filters.status?.includes(option.value)
-                        ? option.color + ' border-transparent shadow-sm'
-                        : 'bg-background border-border hover:border-primary/50',
-                    )}
-                  >
-                    {option.icon}
-                    <span>{option.label}</span>
-                  </button>
-                ))}
+                {statusOptions.map((option) => {
+                  const isSelected = filters.status?.includes(option.value)
+                  const hasAnyStatusSelected = filters.status && filters.status.length > 0
+                  const isDimmed = hasAnyStatusSelected && !isSelected
+
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => handleStatusToggle(option.value)}
+                      className={cn(
+                        'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                        'border hover:shadow-sm',
+                        isSelected
+                          ? option.color + ' border-transparent shadow-sm'
+                          : isDimmed
+                            ? 'bg-background border-border opacity-50 hover:opacity-75'
+                            : 'bg-background border-border hover:border-primary/50',
+                      )}
+                    >
+                      {option.icon}
+                      <span>{option.label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -313,22 +374,30 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {priorityOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handlePriorityToggle(option.value)}
-                    className={cn(
-                      'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                      'border hover:shadow-sm',
-                      filters.priority?.includes(option.value)
-                        ? option.color + ' border-transparent shadow-sm'
-                        : 'bg-background border-border hover:border-primary/50',
-                    )}
-                  >
-                    <span className="text-xs leading-none">{option.icon}</span>
-                    <span>{option.label}</span>
-                  </button>
-                ))}
+                {priorityOptions.map((option) => {
+                  const isSelected = filters.priority?.includes(option.value)
+                  const hasAnyPrioritySelected = filters.priority && filters.priority.length > 0
+                  const isDimmed = hasAnyPrioritySelected && !isSelected
+
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => handlePriorityToggle(option.value)}
+                      className={cn(
+                        'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                        'border hover:shadow-sm',
+                        isSelected
+                          ? option.color + ' border-transparent shadow-sm'
+                          : isDimmed
+                            ? 'bg-background border-border opacity-50 hover:opacity-75'
+                            : 'bg-background border-border hover:border-primary/50',
+                      )}
+                    >
+                      <span className="text-xs leading-none">{option.icon}</span>
+                      <span>{option.label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -371,14 +440,6 @@ export function TaskFilter({ filters, onFiltersChange, taskCounts }: TaskFilterP
                     <Sparkles className="h-3 w-3 inline mr-1" />
                     Filtering {taskCounts?.total || 0} tasks
                   </p>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={handleClearFilters}
-                    className="h-auto p-0 text-xs"
-                  >
-                    Reset filters
-                  </Button>
                 </div>
               </div>
             )}

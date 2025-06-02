@@ -33,6 +33,7 @@ interface TaskListProps {
   showCheckboxes?: boolean
   onBulkDelete?: (taskIds: string[]) => Promise<void>
   onBulkStatusChange?: (taskIds: string[], status: TaskStatus) => Promise<void>
+  isModalActive?: boolean
 }
 
 export function TaskList({
@@ -48,6 +49,7 @@ export function TaskList({
   showCheckboxes = false,
   onBulkDelete,
   onBulkStatusChange,
+  isModalActive = false,
 }: TaskListProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
@@ -123,15 +125,24 @@ export function TaskList({
 
   // Keyboard shortcuts
   const shortcuts = [
-    // Navigation
-    { key: 'j', description: 'Move down', handler: focusNext },
-    { key: 'k', description: 'Move up', handler: focusPrevious },
-    { key: 'g', shift: true, description: 'Go to last', handler: focusLast },
-    { key: 'g', description: 'Go to first', handler: focusFirst },
-
     // Actions
-    { key: 'Enter', description: 'Edit task', handler: () => selectFocused() },
+    { key: 'Delete', description: 'Delete task', handler: deleteFocusedTask },
     {
+      key: 'x',
+      ctrl: true,
+      description: 'Toggle task completion',
+      handler: toggleFocusedTaskStatus,
+    },
+
+    // Selection
+    { key: 'a', ctrl: true, description: 'Select all', handler: () => handleSelectAll(true) },
+    { key: 'Escape', description: 'Clear selection', handler: () => onSelectionChange?.([]) },
+  ]
+
+  // Add Enter and Space key shortcuts only if modal is not active
+  if (!isModalActive) {
+    shortcuts.unshift({ key: 'Enter', description: 'Edit task', handler: () => selectFocused() })
+    shortcuts.splice(2, 0, {
       key: ' ',
       description: 'Toggle selection/status',
       handler: () => {
@@ -139,15 +150,8 @@ export function TaskList({
           handleKeyboardSelect(tasks[focusedIndex])
         }
       },
-    },
-    { key: 'Delete', description: 'Delete task', handler: deleteFocusedTask },
-    { key: 'd', description: 'Delete task', handler: deleteFocusedTask },
-    { key: 'x', description: 'Toggle task completion', handler: toggleFocusedTaskStatus },
-
-    // Selection
-    { key: 'a', ctrl: true, description: 'Select all', handler: () => handleSelectAll(true) },
-    { key: 'Escape', description: 'Clear selection', handler: () => onSelectionChange?.([]) },
-  ]
+    })
+  }
 
   useKeyboardNavigation({
     shortcuts,
