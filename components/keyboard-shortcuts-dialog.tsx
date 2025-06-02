@@ -22,14 +22,12 @@ interface KeyboardShortcutsDialogProps {
 
 const shortcuts: KeyboardShortcut[] = [
   // Global shortcuts
-  { keys: ['Ctrl', 'K'], description: 'Quick add task', category: 'Global' },
-  { keys: ['?'], description: 'Show keyboard shortcuts', category: 'Global' },
-  { keys: ['Ctrl', '/'], description: 'Focus search', category: 'Global' },
-  { keys: ['T'], description: 'Toggle theme', category: 'Global' },
+  { keys: ['Ctrl', 'Shift', 'K'], description: 'Quick add task', category: 'Global' },
+  { keys: ['Ctrl', 'Shift', '?'], description: 'Show keyboard shortcuts', category: 'Global' },
+  { keys: ['Ctrl', 'Alt', 'T'], description: 'Toggle theme', category: 'Global' },
 
   // Navigation
   { keys: ['↑', '↓'], description: 'Navigate tasks', category: 'Navigation' },
-  { keys: ['J', 'K'], description: 'Navigate tasks (Vim style)', category: 'Navigation' },
   { keys: ['Home'], description: 'Go to first task', category: 'Navigation' },
   { keys: ['End'], description: 'Go to last task', category: 'Navigation' },
   { keys: ['Tab'], description: 'Focus next element', category: 'Navigation' },
@@ -39,18 +37,19 @@ const shortcuts: KeyboardShortcut[] = [
   { keys: ['Enter'], description: 'Open/Edit selected task', category: 'Task Actions' },
   { keys: ['Space'], description: 'Toggle task completion', category: 'Task Actions' },
   { keys: ['Delete'], description: 'Delete selected task', category: 'Task Actions' },
-  { keys: ['D', 'D'], description: 'Delete selected task (Vim style)', category: 'Task Actions' },
-  { keys: ['E'], description: 'Edit selected task', category: 'Task Actions' },
-  { keys: ['N'], description: 'Create new task', category: 'Task Actions' },
-  { keys: ['Ctrl', 'D'], description: 'Duplicate task', category: 'Task Actions' },
+  { keys: ['Ctrl', 'Shift', 'E'], description: 'Edit selected task', category: 'Task Actions' },
+  { keys: ['Ctrl', 'Shift', 'K'], description: 'Create new task', category: 'Task Actions' },
 
   // Filters
-  { keys: ['1'], description: 'Show all tasks', category: 'Filters' },
-  { keys: ['2'], description: 'Show active tasks', category: 'Filters' },
-  { keys: ['3'], description: 'Show completed tasks', category: 'Filters' },
-  { keys: ['Ctrl', '1'], description: 'Filter by high priority', category: 'Filters' },
-  { keys: ['Ctrl', '2'], description: 'Filter by medium priority', category: 'Filters' },
-  { keys: ['Ctrl', '3'], description: 'Filter by low priority', category: 'Filters' },
+  { keys: ['Ctrl', '1'], description: 'Reset filter', category: 'Filters' },
+  { keys: ['Ctrl', '2'], description: 'Show pending tasks', category: 'Filters' },
+  { keys: ['Ctrl', '3'], description: 'Show in progress tasks', category: 'Filters' },
+  { keys: ['Ctrl', '4'], description: 'Show completed tasks', category: 'Filters' },
+  { keys: ['Ctrl', '5'], description: 'Show cancelled tasks', category: 'Filters' },
+  { keys: ['Ctrl', 'Shift', '1'], description: 'Filter by high priority', category: 'Filters' },
+  { keys: ['Ctrl', 'Shift', '2'], description: 'Filter by medium priority', category: 'Filters' },
+  { keys: ['Ctrl', 'Shift', '3'], description: 'Filter by low priority', category: 'Filters' },
+  { keys: ['Ctrl', 'Shift', '4'], description: 'Filter by urgent priority', category: 'Filters' },
 
   // Dialog/Modal
   { keys: ['Escape'], description: 'Close dialog/Cancel', category: 'Dialog' },
@@ -115,6 +114,14 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
         <div className="mt-6 pt-6 border-t">
           <p className="text-sm text-muted-foreground text-center">
             Press{' '}
+            <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">
+              Ctrl
+            </kbd>{' '}
+            +{' '}
+            <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">
+              Shift
+            </kbd>{' '}
+            +{' '}
             <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">
               ?
             </kbd>{' '}

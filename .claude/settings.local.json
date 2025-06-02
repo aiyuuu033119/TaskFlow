@@ -36,7 +36,12 @@
       "Bash(NEXT_TELEMETRY_DISABLED=1 npm run build -- --no-lint)",
       "Bash(service postgresql:*)",
       "Bash(systemctl status:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(dos2unix:*)",
+      "Bash(sed:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(ssh-keygen:*)"
     ],
     "deny": []
   },

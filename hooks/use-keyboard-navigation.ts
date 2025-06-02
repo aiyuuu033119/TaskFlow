@@ -36,11 +36,26 @@ export function useKeyboardNavigation({
     (event: KeyboardEvent) => {
       if (!enabled) return
 
-      const { key, ctrlKey, altKey, shiftKey, metaKey } = event
+      const { key, code, ctrlKey, altKey, shiftKey, metaKey } = event
+      const target = event.target as HTMLElement
+      const isInInputField = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+
+      // Disable ALL shortcuts when in input fields
+      if (isInInputField) {
+        return
+      }
 
       // Check for matching shortcuts
       const matchingShortcut = shortcutsRef.current.find((shortcut) => {
-        const keyMatch = shortcut.key.toLowerCase() === key.toLowerCase()
+        // For digit keys with shift, check the code instead of key
+        let keyMatch = false
+        if (shiftKey && /^[0-9]$/.test(shortcut.key)) {
+          // Check if the code matches (e.g., Digit1 for '1')
+          keyMatch = code === `Digit${shortcut.key}`
+        } else {
+          keyMatch = shortcut.key.toLowerCase() === key.toLowerCase()
+        }
+
         const ctrlMatch = (shortcut.ctrl || false) === ctrlKey
         const altMatch = (shortcut.alt || false) === altKey
         const shiftMatch = (shortcut.shift || false) === shiftKey

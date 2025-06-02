@@ -19,7 +19,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'light',
   setTheme: () => null,
 }
 
@@ -40,18 +40,34 @@ export function ThemeProvider({
   React.useEffect(() => {
     const root = window.document.documentElement
 
-    root.classList.remove('light', 'dark')
+    // Only add transition prevention if we're actually changing themes
+    const currentTheme = root.classList.contains('dark') ? 'dark' : 'light'
+    if (currentTheme !== theme) {
+      // Add no-transition class to disable transitions during theme change
+      root.classList.add('no-transition')
 
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
+      root.classList.remove('light', 'dark')
 
-      root.classList.add(systemTheme)
-      return
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+
+        root.classList.add(systemTheme)
+      } else {
+        root.classList.add(theme)
+      }
+
+      // Force a reflow to ensure the theme change is applied immediately
+      void root.offsetHeight
+
+      // Remove no-transition class after a minimal delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          root.classList.remove('no-transition')
+        })
+      })
     }
-
-    root.classList.add(theme)
   }, [theme])
 
   const value = {
