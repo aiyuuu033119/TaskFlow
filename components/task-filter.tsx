@@ -110,7 +110,7 @@ const priorityOptions: { value: TaskPriority; label: string; icon: string; color
 const sortOptions = [
   { value: 'createdAt', label: 'Created Date' },
   { value: 'updatedAt', label: 'Updated Date' },
-  { value: 'dueDate', label: 'Due Date' },
+  { value: 'deadline', label: 'Deadline' },
   { value: 'priority', label: 'Priority' },
   { value: 'title', label: 'Title' },
 ] as const

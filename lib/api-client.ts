@@ -5,6 +5,7 @@ export interface CreateTaskData {
   description?: string
   priority?: TaskPriority
   status?: TaskStatus
+  deadline?: string
 }
 
 export interface UpdateTaskData {
@@ -12,13 +13,14 @@ export interface UpdateTaskData {
   description?: string | null
   priority?: TaskPriority
   status?: TaskStatus
+  deadline?: string | null
 }
 
 export interface TaskFilters {
   search?: string
   priority?: TaskPriority
   status?: TaskStatus
-  sortBy?: 'createdAt' | 'updatedAt' | 'priority' | 'status' | 'title'
+  sortBy?: 'createdAt' | 'updatedAt' | 'priority' | 'status' | 'title' | 'deadline'
   sortOrder?: 'asc' | 'desc'
   page?: number
   limit?: number

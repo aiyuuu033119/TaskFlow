@@ -27,10 +27,8 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   const [title, setTitle] = useState(task?.title || '')
   const [description, setDescription] = useState(task?.description || '')
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'LOW')
-  const [dueDate, setDueDate] = useState(
-    task?.dueDate
-      ? new Date(task.dueDate).toISOString().split('T')[0]
-      : new Date().toISOString().split('T')[0],
+  const [deadline, setDeadline] = useState(
+    task?.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
   )
 
   const { loading: asyncLoading, execute } = useAsync(async (data: any) => {
@@ -52,7 +50,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
       title: title.trim(),
       description: description.trim() || undefined,
       priority,
-      dueDate: dueDate || undefined,
+      deadline: deadline ? new Date(deadline).toISOString() : undefined,
     }
 
     try {
@@ -151,15 +149,15 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="dueDate" className="text-sm font-medium">
-              Due Date
+            <label htmlFor="deadline" className="text-sm font-medium">
+              Deadline
             </label>
             <div className="relative">
               <Input
-                id="dueDate"
+                id="deadline"
                 type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
                 className="w-full"
                 disabled={isLoading}
                 min={new Date().toISOString().split('T')[0]}
