@@ -36,9 +36,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   )
   const [reminderEnabled, setReminderEnabled] = useState(task?.reminderEnabled || false)
   const [reminderTime, setReminderTime] = useState(
-    task?.reminderTime
-      ? new Date(task.reminderTime).toISOString().slice(0, 16)
-      : ''
+    task?.reminderTime ? new Date(task.reminderTime).toISOString().slice(0, 16) : '',
   )
 
   const { loading: asyncLoading, execute } = useAsync(async (data: any) => {
@@ -62,7 +60,8 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
       priority,
       dueDate: dueDate || undefined,
       reminderEnabled,
-      reminderTime: reminderEnabled && reminderTime ? new Date(reminderTime).toISOString() : undefined,
+      reminderTime:
+        reminderEnabled && reminderTime ? new Date(reminderTime).toISOString() : undefined,
     }
 
     try {
@@ -193,7 +192,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
                 Set reminder
               </label>
             </div>
-            
+
             {reminderEnabled && (
               <div className="space-y-2 pl-6">
                 <label htmlFor="reminderTime" className="text-sm font-medium">

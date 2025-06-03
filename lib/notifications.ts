@@ -30,11 +30,13 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
   }
 }
 
-export const showNotification = async (options: NotificationOptions): Promise<Notification | null> => {
+export const showNotification = async (
+  options: NotificationOptions,
+): Promise<Notification | null> => {
   if (!checkNotificationSupport()) return null
 
   const permission = getNotificationPermission()
-  
+
   if (permission !== 'granted') {
     const newPermission = await requestNotificationPermission()
     if (newPermission !== 'granted') return null
@@ -62,7 +64,7 @@ export const showNotification = async (options: NotificationOptions): Promise<No
 
 export const scheduleNotification = (
   options: NotificationOptions,
-  delayMs: number
+  delayMs: number,
 ): NodeJS.Timeout => {
   return setTimeout(() => {
     showNotification(options)
@@ -76,6 +78,6 @@ export const formatReminderTime = (date: Date | string): string => {
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true
+    hour12: true,
   })
 }

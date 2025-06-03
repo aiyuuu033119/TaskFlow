@@ -26,36 +26,28 @@ export default function GlobalError({
                 <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
             </div>
-            
+
             <h1 className="text-3xl font-bold">Critical Error</h1>
-            
+
             <p className="text-muted-foreground">
-              A critical error has occurred. The application needs to restart.
-              Please refresh the page or try again later.
+              A critical error has occurred. The application needs to restart. Please refresh the
+              page or try again later.
             </p>
-            
+
             {error.digest && (
-              <p className="text-xs text-muted-foreground font-mono">
-                Error ID: {error.digest}
-              </p>
+              <p className="text-xs text-muted-foreground font-mono">Error ID: {error.digest}</p>
             )}
-            
+
             <div className="flex gap-2 justify-center pt-4">
-              <Button
-                onClick={() => reset()}
-                variant="default"
-              >
+              <Button onClick={() => reset()} variant="default">
                 Try again
               </Button>
-              
-              <Button
-                onClick={() => window.location.reload()}
-                variant="outline"
-              >
+
+              <Button onClick={() => window.location.reload()} variant="outline">
                 Refresh page
               </Button>
             </div>
-            
+
             <div className="pt-8 text-xs text-muted-foreground">
               If this error persists, please clear your browser cache and cookies.
             </div>

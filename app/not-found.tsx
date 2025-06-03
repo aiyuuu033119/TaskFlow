@@ -16,15 +16,15 @@ export default function NotFound() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Page not found</h1>
           <p className="text-muted-foreground">
-            Sorry, we couldn't find the page you're looking for. 
-            It might have been removed, renamed, or doesn't exist.
+            Sorry, we couldn't find the page you're looking for. It might have been removed,
+            renamed, or doesn't exist.
           </p>
         </div>
-        
+
         <div className="flex gap-2 justify-center pt-4">
           <Link href="/">
             <Button variant="default">
@@ -32,15 +32,12 @@ export default function NotFound() {
               Go home
             </Button>
           </Link>
-          
-          <Button
-            onClick={() => window.history.back()}
-            variant="outline"
-          >
+
+          <Button onClick={() => window.history.back()} variant="outline">
             Go back
           </Button>
         </div>
-        
+
         <div className="pt-8 text-xs text-muted-foreground">
           If you believe this is an error, please contact support.
         </div>

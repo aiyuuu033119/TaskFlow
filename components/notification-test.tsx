@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Bell, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
-import { 
-  checkNotificationSupport, 
-  getNotificationPermission, 
+import {
+  checkNotificationSupport,
+  getNotificationPermission,
   requestNotificationPermission,
-  showNotification 
+  showNotification,
 } from '@/lib/notifications'
 
 export function NotificationTest() {
@@ -26,7 +26,7 @@ export function NotificationTest() {
   const handleRequestPermission = async () => {
     const newPermission = await requestNotificationPermission()
     setPermission(newPermission)
-    
+
     if (newPermission === 'granted') {
       setTestResult('Permission granted! You can now receive notifications.')
     } else if (newPermission === 'denied') {
@@ -40,7 +40,7 @@ export function NotificationTest() {
     const notification = await showNotification({
       title: 'Test Notification',
       body: 'This is a test notification from TaskFlow!',
-      requireInteraction: true
+      requireInteraction: true,
     })
 
     if (notification) {
@@ -79,7 +79,7 @@ export function NotificationTest() {
               {supported ? 'Supported' : 'Not Supported'}
             </Badge>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Permission Status:</span>
             {getStatusBadge()}
@@ -88,22 +88,14 @@ export function NotificationTest() {
 
         <div className="space-y-2 pt-4">
           {supported && permission !== 'granted' && (
-            <Button 
-              onClick={handleRequestPermission} 
-              className="w-full"
-              variant="default"
-            >
+            <Button onClick={handleRequestPermission} className="w-full" variant="default">
               <Bell className="w-4 h-4 mr-2" />
               Request Permission
             </Button>
           )}
 
           {supported && permission === 'granted' && (
-            <Button 
-              onClick={handleTestNotification} 
-              className="w-full"
-              variant="outline"
-            >
+            <Button onClick={handleTestNotification} className="w-full" variant="outline">
               <Bell className="w-4 h-4 mr-2" />
               Send Test Notification
             </Button>
@@ -111,8 +103,8 @@ export function NotificationTest() {
 
           {!supported && (
             <div className="text-sm text-center text-muted-foreground">
-              Your browser does not support notifications.
-              Please use a modern browser like Chrome, Firefox, or Edge.
+              Your browser does not support notifications. Please use a modern browser like Chrome,
+              Firefox, or Edge.
             </div>
           )}
 
@@ -129,11 +121,7 @@ export function NotificationTest() {
           )}
         </div>
 
-        {testResult && (
-          <div className="mt-4 p-3 rounded-md bg-muted text-sm">
-            {testResult}
-          </div>
-        )}
+        {testResult && <div className="mt-4 p-3 rounded-md bg-muted text-sm">{testResult}</div>}
       </div>
     </div>
   )

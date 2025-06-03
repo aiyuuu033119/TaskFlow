@@ -24,31 +24,21 @@ export default function Error({
             <AlertCircle className="h-6 w-6 text-destructive" />
           </div>
         </div>
-        
+
         <h2 className="text-2xl font-bold">Something went wrong!</h2>
-        
+
         <p className="text-muted-foreground">
           An unexpected error occurred. Please try again or contact support if the problem persists.
         </p>
-        
-        {error.digest && (
-          <p className="text-xs text-muted-foreground">
-            Error ID: {error.digest}
-          </p>
-        )}
-        
+
+        {error.digest && <p className="text-xs text-muted-foreground">Error ID: {error.digest}</p>}
+
         <div className="flex gap-2 justify-center pt-4">
-          <Button
-            onClick={() => reset()}
-            variant="default"
-          >
+          <Button onClick={() => reset()} variant="default">
             Try again
           </Button>
-          
-          <Button
-            onClick={() => window.location.href = '/'}
-            variant="outline"
-          >
+
+          <Button onClick={() => (window.location.href = '/')} variant="outline">
             Go home
           </Button>
         </div>

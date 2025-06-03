@@ -38,7 +38,7 @@ export const PATCH = withSecurity({
       const taskData: any = {
         ...validatedData,
       }
-      
+
       // Handle date fields - convert to Date or null
       // Map dueDate to deadline (database field name)
       if ('dueDate' in validatedData && validatedData.dueDate !== undefined) {
@@ -46,7 +46,9 @@ export const PATCH = withSecurity({
         delete taskData.dueDate // Remove the dueDate field as it doesn't exist in database
       }
       if ('reminderTime' in validatedData && validatedData.reminderTime !== undefined) {
-        taskData.reminderTime = validatedData.reminderTime ? new Date(validatedData.reminderTime) : null
+        taskData.reminderTime = validatedData.reminderTime
+          ? new Date(validatedData.reminderTime)
+          : null
       }
 
       // Update the task

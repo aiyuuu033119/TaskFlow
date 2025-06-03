@@ -4,10 +4,10 @@ import React from 'react'
 import { Bell, BellOff } from 'lucide-react'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
-import { 
-  getNotificationPermission, 
+import {
+  getNotificationPermission,
   requestNotificationPermission,
-  checkNotificationSupport 
+  checkNotificationSupport,
 } from '@/lib/notifications'
 import { useToast } from '@/hooks/use-toast'
 
@@ -20,7 +20,7 @@ interface ReminderNotificationProps {
 export function ReminderNotification({
   enabled,
   onToggle,
-  reminderTime
+  reminderTime,
 }: ReminderNotificationProps) {
   const { toast } = useToast()
   const [permission, setPermission] = React.useState<NotificationPermission | null>(null)
@@ -38,7 +38,7 @@ export function ReminderNotification({
       toast({
         title: 'Not Supported',
         description: 'Your browser does not support notifications.',
-        variant: 'destructive'
+        variant: 'destructive',
       })
       return
     }
@@ -46,12 +46,12 @@ export function ReminderNotification({
     if (!enabled && permission !== 'granted') {
       const newPermission = await requestNotificationPermission()
       setPermission(newPermission)
-      
+
       if (newPermission !== 'granted') {
         toast({
           title: 'Permission Denied',
           description: 'Please enable notifications in your browser settings.',
-          variant: 'destructive'
+          variant: 'destructive',
         })
         return
       }
@@ -60,9 +60,9 @@ export function ReminderNotification({
     onToggle(!enabled)
     toast({
       title: enabled ? 'Reminder Disabled' : 'Reminder Enabled',
-      description: enabled 
+      description: enabled
         ? 'You will not receive notifications for this task.'
-        : 'You will receive a notification at the scheduled time.'
+        : 'You will receive a notification at the scheduled time.',
     })
   }
 
