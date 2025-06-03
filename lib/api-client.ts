@@ -5,6 +5,9 @@ export interface CreateTaskData {
   description?: string
   priority?: TaskPriority
   status?: TaskStatus
+  dueDate?: string
+  reminderTime?: string
+  reminderEnabled?: boolean
 }
 
 export interface UpdateTaskData {
@@ -12,6 +15,10 @@ export interface UpdateTaskData {
   description?: string | null
   priority?: TaskPriority
   status?: TaskStatus
+  dueDate?: string
+  reminderTime?: string
+  reminderEnabled?: boolean
+  reminderNotified?: boolean
 }
 
 export interface TaskFilters {

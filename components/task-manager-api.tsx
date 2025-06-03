@@ -15,6 +15,7 @@ import { Button } from './ui/button'
 import { Keyboard } from 'lucide-react'
 import { useKeyboardNavigation } from '@/hooks/use-keyboard-navigation'
 import { useTheme } from 'next-themes'
+import { useReminders } from '@/hooks/use-reminders'
 import {
   useTasks,
   useCreateTask,
@@ -54,6 +55,9 @@ function TaskManagerApiContent() {
   // Extract tasks and pagination from response
   const tasks = tasksResponse?.tasks || []
   const pagination = tasksResponse?.pagination
+
+  // Enable reminder checking for tasks
+  useReminders({ tasks, enabled: true })
 
   // Task counts for filter component
   const taskCounts = useMemo(() => {
