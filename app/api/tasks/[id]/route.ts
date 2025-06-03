@@ -34,10 +34,25 @@ export const PATCH = withSecurity({
         throw new ApiError(404, 'Task not found')
       }
 
+      // Transform date strings to Date objects for Prisma
+      const taskData: any = {
+        ...validatedData,
+      }
+      
+      // Handle date fields - convert to Date or null
+      // Map dueDate to deadline (database field name)
+      if ('dueDate' in validatedData && validatedData.dueDate !== undefined) {
+        taskData.deadline = validatedData.dueDate ? new Date(validatedData.dueDate) : null
+        delete taskData.dueDate // Remove the dueDate field as it doesn't exist in database
+      }
+      if ('reminderTime' in validatedData && validatedData.reminderTime !== undefined) {
+        taskData.reminderTime = validatedData.reminderTime ? new Date(validatedData.reminderTime) : null
+      }
+
       // Update the task
       const task = await prisma.task.update({
         where: { id },
-        data: validatedData,
+        data: taskData,
       })
 
       return NextResponse.json(task)

@@ -24,6 +24,9 @@ export const createTaskSchema = z.object({
     .transform((val) => (val ? sanitizeString(val, { maxLength: 1000, trim: true }) : val)),
   priority: taskPrioritySchema.default('MEDIUM'),
   status: taskStatusSchema.default('PENDING'),
+  dueDate: z.string().optional().nullable(),
+  reminderTime: z.string().optional().nullable(),
+  reminderEnabled: z.boolean().default(false),
 })
 
 export const updateTaskSchema = z.object({
@@ -41,6 +44,10 @@ export const updateTaskSchema = z.object({
     .transform((val) => (val ? sanitizeString(val, { maxLength: 1000, trim: true }) : val)),
   priority: taskPrioritySchema.optional(),
   status: taskStatusSchema.optional(),
+  dueDate: z.string().optional().nullable(),
+  reminderTime: z.string().optional().nullable(),
+  reminderEnabled: z.boolean().optional(),
+  reminderNotified: z.boolean().optional(),
 })
 
 export const taskIdSchema = z.object({

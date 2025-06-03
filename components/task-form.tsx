@@ -14,7 +14,9 @@ import {
 } from '@/components/ui/select'
 import { type Task, type CreateTaskData, type UpdateTaskData, type TaskPriority } from '@/types'
 import { useAsync } from '@/hooks/use-async'
-import { CalendarDays, X } from 'lucide-react'
+import { CalendarDays, X, Clock } from 'lucide-react'
+import { ReminderNotification } from './reminder-notification'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface TaskFormProps {
   task?: Task
@@ -28,9 +30,15 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
   const [description, setDescription] = useState(task?.description || '')
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'LOW')
   const [dueDate, setDueDate] = useState(
-    task?.dueDate
-      ? new Date(task.dueDate).toISOString().split('T')[0]
+    task?.deadline
+      ? new Date(task.deadline).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
+  )
+  const [reminderEnabled, setReminderEnabled] = useState(task?.reminderEnabled || false)
+  const [reminderTime, setReminderTime] = useState(
+    task?.reminderTime
+      ? new Date(task.reminderTime).toISOString().slice(0, 16)
+      : ''
   )
 
   const { loading: asyncLoading, execute } = useAsync(async (data: any) => {
@@ -53,6 +61,8 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
       description: description.trim() || undefined,
       priority,
       dueDate: dueDate || undefined,
+      reminderEnabled,
+      reminderTime: reminderEnabled && reminderTime ? new Date(reminderTime).toISOString() : undefined,
     }
 
     try {
@@ -166,6 +176,48 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading: externalLoading 
               />
               <CalendarDays className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="reminder"
+                checked={reminderEnabled}
+                onCheckedChange={(checked) => setReminderEnabled(checked as boolean)}
+                disabled={isLoading}
+              />
+              <label
+                htmlFor="reminder"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Set reminder
+              </label>
+            </div>
+            
+            {reminderEnabled && (
+              <div className="space-y-2 pl-6">
+                <label htmlFor="reminderTime" className="text-sm font-medium">
+                  Reminder Time
+                </label>
+                <div className="relative">
+                  <Input
+                    id="reminderTime"
+                    type="datetime-local"
+                    value={reminderTime}
+                    onChange={(e) => setReminderTime(e.target.value)}
+                    className="w-full"
+                    disabled={isLoading}
+                    min={new Date().toISOString().slice(0, 16)}
+                  />
+                  <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                </div>
+                <ReminderNotification
+                  enabled={reminderEnabled}
+                  onToggle={setReminderEnabled}
+                  reminderTime={reminderTime}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">

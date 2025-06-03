@@ -18,6 +18,8 @@ import {
   Circle,
   PlayCircle,
   XCircle,
+  Bell,
+  BellOff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -69,7 +71,7 @@ export function TaskCard({
 
   const isCompleted = task.status === 'COMPLETED'
   const isCancelled = task.status === 'CANCELLED'
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !isCompleted
+  const isOverdue = task.deadline && new Date(task.deadline) < new Date() && !isCompleted
 
   const handleStatusChange = (newStatus: string) => {
     if (onStatusChange && newStatus !== task.status) {
@@ -296,7 +298,25 @@ export function TaskCard({
           </div>
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground/70">
-            {task.dueDate && (
+            {task.reminderEnabled && task.reminderTime && (
+              <div
+                className={cn(
+                  'flex items-center gap-1.5 px-2 py-0.5 rounded-full',
+                  'bg-muted/50 backdrop-blur-sm',
+                  task.reminderNotified
+                    ? 'bg-green-100/50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                    : 'bg-blue-100/50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+                )}
+                title={`Reminder: ${formatDate(task.reminderTime)} at ${formatTime(task.reminderTime)}`}
+              >
+                {task.reminderNotified ? (
+                  <BellOff className="h-3 w-3" />
+                ) : (
+                  <Bell className="h-3 w-3" />
+                )}
+              </div>
+            )}
+            {task.deadline && (
               <div
                 className={cn(
                   'flex items-center gap-1.5 px-2 py-0.5 rounded-full',
@@ -306,7 +326,7 @@ export function TaskCard({
                 )}
               >
                 <CalendarDays className="h-3 w-3" />
-                <span>{formatDate(task.dueDate)}</span>
+                <span>{formatDate(task.deadline)}</span>
               </div>
             )}
             <div className="flex items-center gap-1.5">

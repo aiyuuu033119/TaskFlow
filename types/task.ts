@@ -11,7 +11,10 @@ export interface Task {
   createdAt: Date | string
   updatedAt: Date | string
   completedAt?: Date | string | null
-  dueDate?: Date | string | null
+  deadline?: Date | string | null
+  reminderTime?: Date | string | null
+  reminderEnabled?: boolean
+  reminderNotified?: boolean
 }
 
 export interface CreateTaskData {
@@ -19,6 +22,8 @@ export interface CreateTaskData {
   description?: string
   priority: TaskPriority
   dueDate?: string
+  reminderTime?: string
+  reminderEnabled?: boolean
 }
 
 export interface UpdateTaskData {
@@ -27,6 +32,9 @@ export interface UpdateTaskData {
   status?: TaskStatus
   priority?: TaskPriority
   dueDate?: string
+  reminderTime?: string
+  reminderEnabled?: boolean
+  reminderNotified?: boolean
 }
 
 export interface TaskFilters {
